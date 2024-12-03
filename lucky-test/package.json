@@ -2,7 +2,7 @@
   "name": "luck-test",
   "version": "1.0.0",
   "bin": {
-    "luck-test": "bin/index.js"
+    "lucky-test": "bin/index.js"
   },
   "main": "index.js",
   "scripts": {
