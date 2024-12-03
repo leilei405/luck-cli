@@ -1,5 +1,5 @@
 {
-  "name": "luck-test",
+  "name": "lucky-test",
   "version": "1.0.0",
   "bin": {
     "lucky-test": "bin/index.js"
