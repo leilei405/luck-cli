@@ -21,7 +21,7 @@ if (options.length > 1) {
 console.log(command, "command");
 
 // 2. 实现参数解析 --version 和 init --name
-if (command.startsWith("--") || command.startsWith("-")) {
+if (command?.startsWith("--") || command?.startsWith("-")) {
   let globalOption = command.replace(/--|-/g, "");
   if (globalOption === "version" || globalOption === "V") {
     console.log("版本: 1.0.0");
