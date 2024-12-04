@@ -32,7 +32,6 @@
 const yargs = require("yargs/yargs");
 const dedent = require("dedent");
 const { hideBin } = require("yargs/helpers");
-const { alias } = require("yargs");
 
 const argv = hideBin(process.argv);
 
