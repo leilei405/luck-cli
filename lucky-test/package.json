@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "commander": "^12.1.0",
     "dedent": "^1.5.3",
     "lucky-test-lib": "^1.1.0",
     "yargs": "^17.7.2"
