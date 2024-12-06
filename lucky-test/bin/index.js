@@ -13,5 +13,3 @@ program.outputHelp();
 
 // 解析参数
 program.parse(process.argv);
-
-customization;
