@@ -1,3 +1,4 @@
 #!/usr/bin/env node
 // require("./inquirerList");
-require("./readline");
+// require("./readline");
+require("./generator");
