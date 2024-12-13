@@ -1,0 +1,17 @@
+{
+  "name": "test-cli",
+  "version": "1.0.0",
+  "main": "bin/test-cli.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "bin": {
+    "test-cli": "bin/test-cli.mjs"
+  },
+  "dependencies": {
+    "test1": "^1.0.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "workspaces",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "cli": "test-cli"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "workspaces": [
+    "test1",
+    "test2",
+    "test-cli"
+  ]
+}
