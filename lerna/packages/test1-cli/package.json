@@ -5,7 +5,7 @@
   "author": "leilei405 <1601178425@qq.com>",
   "homepage": "https://github.com/leilei405/luck-cli#readme",
   "license": "ISC",
-  "main": "dist/test1-cli.js",
+  "main": "bin/test1-cli.mjs",
   "module": "dist/test1-cli.module.js",
   "bin": {
     "lerna-test1-cli": "bin/test1-cli.mjs"
