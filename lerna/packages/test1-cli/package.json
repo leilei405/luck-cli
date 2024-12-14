@@ -26,6 +26,8 @@
     "test": "node ./__tests__/test1-cli.test.js"
   },
   "dependencies": {
+    "@lucky-test/lerna-test3": "^0.0.2",
+    "@lucky-test/lerna-test4": "^0.0.2",
     "yargs": "^17.7.2"
   },
   "type": "module",
