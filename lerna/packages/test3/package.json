@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/leilei405/luck-cli/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "gitHead": "c607771daad890dd4aab75a9b685589a3e0d9ad5"
 }
