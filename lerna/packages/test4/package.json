@@ -1,6 +1,6 @@
 {
   "name": "@lucky-test/lerna-test4",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "测试lerna的包4",
   "author": "leilei405 <1601178425@qq.com>",
   "homepage": "https://github.com/leilei405/luck-cli#readme",

@@ -1,6 +1,6 @@
 {
   "name": "@lucky-test/test1-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "脚手架测试1",
   "author": "leilei405 <1601178425@qq.com>",
   "homepage": "https://github.com/leilei405/luck-cli#readme",
@@ -26,8 +26,8 @@
     "test": "node ./__tests__/test1-cli.test.js"
   },
   "dependencies": {
-    "@lucky-test/lerna-test3": "^0.0.2",
-    "@lucky-test/lerna-test4": "^0.0.2",
+    "@lucky-test/lerna-test3": "^0.0.3",
+    "@lucky-test/lerna-test4": "^0.0.3",
     "yargs": "^17.7.2"
   },
   "type": "module",
