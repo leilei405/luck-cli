@@ -1,0 +1,35 @@
+{
+  "name": "@lucky-test/test1-cli",
+  "version": "0.0.1",
+  "description": "脚手架测试1",
+  "author": "leilei405 <1601178425@qq.com>",
+  "homepage": "https://github.com/leilei405/luck-cli#readme",
+  "license": "ISC",
+  "main": "dist/test1-cli.js",
+  "module": "dist/test1-cli.module.js",
+  "bin": {
+    "lerna-test1-cli": "bin/test1-cli.mjs"
+  },
+  "directories": {
+    "lib": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leilei405/luck-cli.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/test1-cli.test.js"
+  },
+  "dependencies": {
+    "yargs": "^17.7.2"
+  },
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/leilei405/luck-cli/issues"
+  }
+}
