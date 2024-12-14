@@ -1,5 +1,5 @@
 {
-  "name": "test1",
+  "name": "@lucky-test/test1",
   "version": "1.0.0",
   "main": "index.mjs",
   "scripts": {
@@ -10,5 +10,8 @@
   "description": "",
   "dependencies": {
     "chalk": "^5.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

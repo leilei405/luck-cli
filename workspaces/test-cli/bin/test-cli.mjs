@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
-import test from "test1";
+import test1 from "@lucky-test/test1";
+import test2 from "@lucky-test/test2";
 
-test();
+test1();
+test2();

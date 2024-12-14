@@ -1,11 +1,17 @@
 {
-  "name": "test2",
+  "name": "@lucky-test/test2",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "ora": "^8.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

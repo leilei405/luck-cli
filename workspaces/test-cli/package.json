@@ -1,5 +1,5 @@
 {
-  "name": "test-cli",
+  "name": "@lucky-test/test-cli",
   "version": "1.0.0",
   "main": "bin/test-cli.mjs",
   "scripts": {
@@ -12,6 +12,10 @@
     "test-cli": "bin/test-cli.mjs"
   },
   "dependencies": {
-    "test1": "^1.0.0"
+    "@lucky-test/test1": "^1.0.0",
+    "@lucky-test/test2": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
