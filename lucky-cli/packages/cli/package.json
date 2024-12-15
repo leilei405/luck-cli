@@ -31,6 +31,7 @@
     "@lucky.com/init": "^0.0.0",
     "@lucky.com/utils": "^0.0.0",
     "commander": "^12.1.0",
-    "import-local": "^3.2.0"
+    "import-local": "^3.2.0",
+    "semver": "^7.6.3"
   }
 }
