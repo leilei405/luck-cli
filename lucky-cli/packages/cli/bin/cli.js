@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 const importLocal = require("import-local");
-const log = require("npmlog");
+const { log } = require("@lucky.com/utils");
+
 const entry = require("../lib/index");
 
 if (importLocal(__filename)) {

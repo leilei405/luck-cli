@@ -1,5 +1,6 @@
 "use strict";
 const Command = require("@lucky.com/command");
+const { log } = require("@lucky.com/utils");
 
 class InitCommand extends Command {
   get command() {
@@ -18,7 +19,7 @@ class InitCommand extends Command {
   }
 
   action([name, otherArgs]) {
-    console.log(name, otherArgs, "测试");
+    log.success(name, otherArgs, "测试");
   }
 
   preAction() {

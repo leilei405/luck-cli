@@ -1,7 +1,7 @@
 {
-  "name": "@lucky.com/init",
+  "name": "@lucky.com/utils",
   "version": "0.0.0",
-  "description": "init command for luck-cli",
+  "description": "lucky cli utils",
   "author": "leilei405 <1601178425@qq.com>",
   "homepage": "https://github.com/leilei405/luck-cli#readme",
   "license": "ISC",
@@ -18,13 +18,12 @@
     "url": "git+https://github.com/leilei405/luck-cli.git"
   },
   "scripts": {
-    "test": "node ./__tests__/init.test.js"
+    "test": "node ./__tests__/utils.test.js"
   },
   "bugs": {
     "url": "https://github.com/leilei405/luck-cli/issues"
   },
   "dependencies": {
-    "@lucky.com/command": "^0.0.0",
-    "@lucky.com/utils": "^0.0.0"
+    "npmlog": "^7.0.1"
   }
 }

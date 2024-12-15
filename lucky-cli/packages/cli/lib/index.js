@@ -1,10 +1,12 @@
 const commander = require("commander");
 const createInitCommand = require("@lucky.com/init");
+const { log } = require("@lucky.com/utils");
 
 const { program } = commander;
 const packageJson = require("../package.json");
 
 module.exports = function (argv) {
+  log.info("正在使用本地版本", packageJson.version);
   program
     .name(Object.keys(packageJson.bin)[0])
     .usage("<command> [options]")
