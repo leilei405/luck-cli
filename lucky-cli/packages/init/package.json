@@ -1,7 +1,7 @@
 {
-  "name": "@lucky.com/cli",
+  "name": "@lucky.com/init",
   "version": "0.0.0",
-  "description": "lucky cli 脚手架",
+  "description": "init command for luck-cli",
   "author": "leilei405 <1601178425@qq.com>",
   "homepage": "https://github.com/leilei405/luck-cli#readme",
   "license": "ISC",
@@ -10,27 +10,20 @@
     "lib": "lib",
     "test": "__tests__"
   },
-  "bin": {
-    "lucky-cli": "bin/cli.js"
-  },
   "files": [
-    "lib",
-    "bin"
+    "lib"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/leilei405/luck-cli.git"
   },
   "scripts": {
-    "test": "node ./__tests__/cli.test.js"
+    "test": "node ./__tests__/init.test.js"
   },
   "bugs": {
     "url": "https://github.com/leilei405/luck-cli/issues"
   },
   "dependencies": {
-    "@lucky.com/init": "^0.0.0",
-    "commander": "^12.1.0",
-    "import-local": "^3.2.0",
-    "npmlog": "^7.0.1"
+    "@lucky.com/command": "^0.0.0"
   }
 }
