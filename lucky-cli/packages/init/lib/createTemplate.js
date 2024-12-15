@@ -1,4 +1,4 @@
-import { log, makeList } from "@lucky.com/utils";
+import { log, makeList, makeInput } from "@lucky.com/utils";
 import { TEMPLATE_LIST, CREATE_TYPE, TYPE_PROJECT } from "./constants.js";
 
 // 获取创建类型
@@ -12,9 +12,18 @@ const getCreateType = () => {
 
 // 获取项目的名称
 const getProjectName = async () => {
-  return makeList({
+  return makeInput({
     message: "请输入项目名称",
-    defaultValue: "lucky-cli",
+    defaultValue: "",
+  });
+};
+
+// 获取模版列表
+const getTemplateList = async () => {
+  return makeList({
+    choices: TEMPLATE_LIST,
+    message: "请选择要创建的项目模版",
+    defaultValue: TEMPLATE_LIST[0],
   });
 };
 
@@ -24,6 +33,25 @@ const createTemplate = async (name, opts) => {
   if (createType === TYPE_PROJECT) {
     // 2. 获取项目名称
     const projectName = await getProjectName();
+    const template = await getTemplateList();
+    // 查找模版列表中对应的模版信息
+    const selectedTemplate = TEMPLATE_LIST.find(
+      (item) => item.value === template
+    );
+
+    log.verbose(
+      "projectName",
+      projectName,
+      "selectedTemplate",
+      selectedTemplate
+    );
+
+    // 返回选中的信息
+    return {
+      type: createType,
+      name: projectName,
+      template: selectedTemplate,
+    };
   }
 };
 

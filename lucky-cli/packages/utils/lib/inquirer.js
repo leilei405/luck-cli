@@ -31,7 +31,7 @@ const make = ({
 };
 
 const makeList = (params) => {
-  console.log(params, "params");
+  // console.log(params, "params");
   return make({ ...params });
 };
 const makeInput = (params) => {

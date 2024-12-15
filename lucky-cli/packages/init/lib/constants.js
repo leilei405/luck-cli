@@ -5,11 +5,13 @@ export const TYPE_PAGE = "page";
 export const TEMPLATE_LIST = [
   {
     name: "vue3 模版",
+    value: "tempalte vue3",
     npmName: "@lucky.com/vue3-template",
     version: "1.0.1",
   },
   {
     name: "react18 模版",
+    value: "tempalte react18",
     npmName: "@lucky.com/react18-template",
     version: "1.0.0",
   },
