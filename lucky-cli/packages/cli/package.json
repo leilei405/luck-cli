@@ -1,0 +1,34 @@
+{
+  "name": "@lucky.com/cli",
+  "version": "0.0.0",
+  "description": "lucky cli 脚手架",
+  "author": "leilei405 <1601178425@qq.com>",
+  "homepage": "https://github.com/leilei405/luck-cli#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "bin": {
+    "lucky-cli": "bin/cli.js"
+  },
+  "files": [
+    "lib",
+    "bin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leilei405/luck-cli.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/cli.test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/leilei405/luck-cli/issues"
+  },
+  "dependencies": {
+    "import-local": "^3.2.0",
+    "npmlog": "^7.0.1"
+  }
+}
