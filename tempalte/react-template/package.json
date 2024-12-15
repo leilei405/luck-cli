@@ -1,0 +1,10 @@
+{
+  "name": "@lucky.com/react18-template",
+  "version": "1.0.0",
+  "description": "React18 项目初始化模版",
+  "author": "lucky",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  }
+}
