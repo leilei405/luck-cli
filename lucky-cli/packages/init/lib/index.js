@@ -1,6 +1,6 @@
 "use strict";
-const Command = require("@lucky.com/command");
-const { log } = require("@lucky.com/utils");
+import Command from "@lucky.com/command";
+import { log } from "@lucky.com/utils";
 
 class InitCommand extends Command {
   get command() {
@@ -35,4 +35,4 @@ function Init(instance) {
   return new InitCommand(instance);
 }
 
-module.exports = Init;
+export default Init;

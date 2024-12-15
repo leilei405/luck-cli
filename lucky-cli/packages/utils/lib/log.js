@@ -1,5 +1,5 @@
-const log = require("npmlog");
-const isDebug = require("./isDebug");
+import log from "npmlog";
+import isDebug from "./isDebug.js";
 
 // 调试模式 -d --debug
 if (isDebug) {
@@ -17,4 +17,4 @@ log.addLevel("success", 2000, {
   bold: true,
 });
 
-module.exports = log;
+export default log;
