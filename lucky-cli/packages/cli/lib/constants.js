@@ -1,1 +1,1 @@
-export const LOWEST_NODE_VERSION = "22.0.0";
+export const LOWEST_NODE_VERSION = "16.20.2";

@@ -19,7 +19,13 @@ class InitCommand extends Command {
   }
 
   action([name, otherArgs]) {
-    log.success(name, otherArgs, "测试");
+    log.verbose("init", name, otherArgs);
+    // new Promise((resolve) => {
+    //   resolve();
+    // }).then(() => {
+    //   throw new Error("error for Promise");
+    // });
+    // throw new Error("1111");
   }
 
   preAction() {
