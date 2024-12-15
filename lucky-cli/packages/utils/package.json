@@ -24,6 +24,7 @@
     "url": "https://github.com/leilei405/luck-cli/issues"
   },
   "dependencies": {
+    "inquirer": "^12.2.0",
     "npmlog": "^7.0.1"
   },
   "type": "module"
