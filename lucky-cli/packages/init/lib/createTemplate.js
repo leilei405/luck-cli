@@ -1,4 +1,4 @@
-import { log, makeList, makeInput } from "@lucky.com/utils";
+import { log, makeList, makeInput, getLatestVersion } from "@lucky.com/utils";
 import { TEMPLATE_LIST, CREATE_TYPE, TYPE_PROJECT } from "./constants.js";
 
 // 获取创建类型
@@ -39,12 +39,8 @@ const createTemplate = async (name, opts) => {
       (item) => item.value === template
     );
 
-    log.verbose(
-      "projectName",
-      projectName,
-      "selectedTemplate",
-      selectedTemplate
-    );
+    const lastVersion = await getLatestVersion(selectedTemplate.npmName);
+    selectedTemplate.version = lastVersion; // 最新版本
 
     // 返回选中的信息
     return {
