@@ -2,6 +2,7 @@
 import Command from "@lucky.com/command";
 import { log } from "@lucky.com/utils";
 import createTemplate from "./createTemplate.js";
+import downloadTemplate from "./downloadTemplate.js";
 
 class InitCommand extends Command {
   get command() {
@@ -19,11 +20,13 @@ class InitCommand extends Command {
     ];
   }
 
-  action([name, otherArgs]) {
+  async action([name, otherArgs]) {
     log.verbose("init", name, otherArgs);
     // 1. 选择项目模版，生成项目信息
-    createTemplate(name);
+    const selectedTemplate = await createTemplate(name, otherArgs);
+    log.verbose("tempalte", selectedTemplate);
     // 2. 下载项目模版至缓存目录
+    const download = await downloadTemplate(selectedTemplate);
     // 3. 安装项目模版至项目目录
   }
 

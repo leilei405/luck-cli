@@ -28,3 +28,5 @@ export const CREATE_TYPE = [
     value: TYPE_PAGE,
   },
 ];
+
+export const TEMP_HOME = ".lucky-cli";
