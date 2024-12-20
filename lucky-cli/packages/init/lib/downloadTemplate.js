@@ -40,6 +40,7 @@ export default async function downloadTemplate(selectedTemplate) {
     await downloadAddTemplate(targetPath, template);
     spinner.stop();
     spinner.succeed("模版下载成功");
+    log.success("模版下载成功");
   } catch (error) {
     spinner.fail("模版下载失败");
     spinner.stop();
