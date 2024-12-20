@@ -46,16 +46,40 @@ const makeTargetPath = () => {
 };
 
 const createTemplate = async (name, opts) => {
+  const { type = null, template = "" } = opts;
+  let createType; // 项目类型
+  let projectName; // 项目名称
+  let selectedTemplate; // 选择的项目模版
+
   // 1. 获取创建类型
-  const createType = await getCreateType();
+  if (type) {
+    createType = type;
+  } else {
+    createType = await getCreateType();
+  }
+  log.verbose("创建的项目类型", createType);
+
+  // 2. 获取项目名称
   if (createType === TYPE_PROJECT) {
-    // 2. 获取项目名称
-    const projectName = await getProjectName();
-    const template = await getTemplateList();
-    // 查找模版列表中对应的模版信息
-    const selectedTemplate = TEMPLATE_LIST.find(
-      (item) => item.value === template
-    );
+    if (name) {
+      projectName = name;
+    } else {
+      projectName = await getProjectName();
+    }
+
+    // 3. 获取模版列表 选中的模版信息
+    if (template) {
+      selectedTemplate = TEMPLATE_LIST.find((it) => it.value === template);
+      if (!selectedTemplate) {
+        log.error("项目模版不存在", template);
+      }
+      log.verbose("我选择的项目模版", selectedTemplate);
+    } else {
+      const addTemplate = await getTemplateList();
+      selectedTemplate = TEMPLATE_LIST.find(
+        (item) => item.value === addTemplate
+      );
+    }
 
     const lastVersion = await getLatestVersion(selectedTemplate.npmName);
     selectedTemplate.version = lastVersion; // 最新版本
@@ -69,6 +93,8 @@ const createTemplate = async (name, opts) => {
       template: selectedTemplate,
       targetPath,
     };
+  } else {
+    throw new Error(`暂未支持 ${createType} 类型的项目创建`);
   }
 };
 
