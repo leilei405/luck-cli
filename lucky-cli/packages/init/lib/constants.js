@@ -15,6 +15,12 @@ export const TEMPLATE_LIST = [
     npmName: "@lucky.com/react18-template",
     version: "1.0.0",
   },
+  {
+    name: "vue-element-admin 模版",
+    value: "template-vue-element-admin",
+    npmName: "@lucky.com/template-vue-element-admin",
+    version: "1.0.0",
+  },
 ];
 
 // 创建类型
