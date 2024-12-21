@@ -23,28 +23,30 @@ const TEMPLATE_LIST = [
 
 class ProjectController extends Controller {
   // 项目模版的查询
-  index() {
+  async index() {
     const { ctx } = this;
-    ctx.body = TEMPLATE_LIST;
+    const projectResult = await ctx.model.Project.find({});
+    ctx.body = projectResult;
   }
 
   // 拿到某个项目模版的详情
-  show() {
+  async show() {
     const { ctx } = this;
     const id = ctx.params.id;
-    const itemTemplate = TEMPLATE_LIST.find((it) => it.value === id);
-    console.log("itemTemplate", itemTemplate, id);
-    if (itemTemplate) {
-      ctx.body = itemTemplate;
+    const findByIdDetail = await ctx.model.Project.find({ value: id });
+    console.log("findByIdDetail", findByIdDetail);
+    if (findByIdDetail.length > 0) {
+      ctx.body = findByIdDetail[0];
     } else {
       ctx.body = {};
     }
   }
 
   // 项目模版的创建
-  create() {
-    console.log(this.ctx.request.body);
-    this.ctx.body = "create";
+  async create() {
+    const params = this.ctx.request.body;
+    console.log(params);
+    return await this.ctx.model.Project.create(params);
   }
 
   // 项目模版的删除
