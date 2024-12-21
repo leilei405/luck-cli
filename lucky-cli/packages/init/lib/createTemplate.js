@@ -52,7 +52,7 @@ const makeTargetPath = () => {
 const projectTemplateList = async () => {
   try {
     const data = await request({
-      url: "/api/project/template",
+      url: "/v1/project",
       method: "get",
     });
     log.verbose("list", data);
