@@ -2,6 +2,7 @@ import log from "./log.js";
 import isDebug from "./isDebug.js";
 import { makeList, makeInput } from "./inquirer.js";
 import { getLatestVersion } from "./npm.js";
+import request from "./request.js";
 
 function printErrorLog(err, errorType) {
   if (isDebug()) {
@@ -11,4 +12,12 @@ function printErrorLog(err, errorType) {
   }
 }
 
-export { log, isDebug, makeList, makeInput, getLatestVersion, printErrorLog };
+export {
+  log,
+  isDebug,
+  makeList,
+  makeInput,
+  getLatestVersion,
+  printErrorLog,
+  request,
+};

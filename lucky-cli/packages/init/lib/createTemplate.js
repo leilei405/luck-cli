@@ -1,12 +1,15 @@
 import { homedir } from "node:os";
 import path from "node:path";
-import { log, makeList, makeInput, getLatestVersion } from "@lucky.com/utils";
 import {
-  TEMPLATE_LIST,
-  CREATE_TYPE,
-  TYPE_PROJECT,
-  TEMP_HOME,
-} from "./constants.js";
+  log,
+  makeList,
+  makeInput,
+  getLatestVersion,
+  printErrorLog,
+  request,
+} from "@lucky.com/utils";
+
+import { CREATE_TYPE, TYPE_PROJECT, TEMP_HOME } from "./constants.js";
 
 // 获取创建类型
 const getCreateType = () => {
@@ -32,7 +35,7 @@ const getProjectName = async () => {
 };
 
 // 获取模版列表
-const getTemplateList = async () => {
+const getTemplateList = async (TEMPLATE_LIST) => {
   return makeList({
     choices: TEMPLATE_LIST,
     message: "请选择要创建的项目模版",
@@ -45,7 +48,27 @@ const makeTargetPath = () => {
   return path.resolve(`${homedir()}/${TEMP_HOME}`, "cli-template");
 };
 
+// 通过API的方式获取模版列表
+const projectTemplateList = async () => {
+  try {
+    const data = await request({
+      url: "/api/project/template",
+      method: "get",
+    });
+    log.verbose("list", data);
+    return data;
+  } catch (err) {
+    printErrorLog(err, "获取模版列表失败");
+    return [];
+  }
+};
+
 const createTemplate = async (name, opts) => {
+  const TEMPLATE_LIST = await projectTemplateList();
+  if (!TEMPLATE_LIST.length) {
+    throw new Error("模版列表为空");
+  }
+
   const { type = null, template = "" } = opts;
   let createType; // 项目类型
   let projectName; // 项目名称
@@ -75,7 +98,7 @@ const createTemplate = async (name, opts) => {
       }
       log.verbose("我选择的项目模版", selectedTemplate);
     } else {
-      const addTemplate = await getTemplateList();
+      const addTemplate = await getTemplateList(TEMPLATE_LIST);
       selectedTemplate = TEMPLATE_LIST.find(
         (item) => item.value === addTemplate
       );

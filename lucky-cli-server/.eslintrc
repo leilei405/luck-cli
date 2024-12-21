@@ -1,4 +1,5 @@
 {
   "extends": "eslint-config-egg",
-  "root": true
+  "root": true,
+  "singleQuote": true
 }
