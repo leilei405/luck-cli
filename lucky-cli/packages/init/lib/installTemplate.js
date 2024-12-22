@@ -4,13 +4,24 @@ import fse from "fs-extra";
 import ora from "ora";
 import ejs from "ejs";
 import pkg from "glob";
-import { log } from "@lucky.com/utils";
+import { log, makeInput, makeList } from "@lucky.com/utils";
 
 const { glob } = pkg;
 
 // 1. 获取缓存目录
 const getCacheFilePath = (targetPath, template) => {
   return path.resolve(targetPath, "node_modules", template.npmName, "template");
+};
+
+// 获取插件
+const getPluginFilePath = (targetPath, template) => {
+  return path.resolve(
+    targetPath,
+    "node_modules",
+    template.npmName,
+    "plugins",
+    "index.js"
+  );
 };
 
 // 2. 拷贝文件
@@ -26,15 +37,29 @@ const copyFile = async (targetPath, tempalte, installDir) => {
 };
 
 // 2. 渲染文件
-const ejsRender = (installDir, tempalte, customName) => {
+const ejsRender = async (targetPath, installDir, tempalte, customName) => {
   log.verbose("installDir", installDir, tempalte);
   const { ignore } = tempalte;
+  // 执行插件
+  let data = {};
+  const pluginsPath = await getPluginFilePath(targetPath, tempalte);
+  if (pathExistsSync(pluginsPath)) {
+    const pluginsFn = (await import(pluginsPath)).default;
+    const api = {
+      makeList,
+      makeInput,
+    };
+    data = await pluginsFn(api);
+  }
+
   const ejsData = {
     data: {
       // name: value, // 项目名称
       name: customName, // 项目名称
+      ...data,
     },
   };
+
   glob(
     "**",
     {
@@ -83,7 +108,7 @@ const installTemplate = async (selectedTemplate, opts) => {
   await copyFile(targetPath, template, installDir);
 
   // 3. 渲染文件 name 自己输入的项目名称
-  await ejsRender(installDir, template, name);
+  await ejsRender(targetPath, installDir, template, name);
 };
 
 export default installTemplate;

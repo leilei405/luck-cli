@@ -1,9 +1,13 @@
 {
   "name": "@lucky.com/vue3-template",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "vue3项目初始化模版",
   "author": "lucky",
   "license": "ISC",
+  "files": [
+    "plugins",
+    "template"
+  ],
   "publishConfig": {
     "access": "public"
   }
