@@ -1,5 +1,5 @@
 {
-  "name": "vue-tempalte",
+  "name": "<%= data.name %>",
   "version": "0.1.0",
   "private": true,
   "scripts": {

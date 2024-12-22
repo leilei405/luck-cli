@@ -2,7 +2,11 @@ import { pathExistsSync } from "path-exists";
 import path from "node:path";
 import fse from "fs-extra";
 import ora from "ora";
+import ejs from "ejs";
+import pkg from "glob";
 import { log } from "@lucky.com/utils";
+
+const { glob } = pkg;
 
 // 1. 获取缓存目录
 const getCacheFilePath = (targetPath, template) => {
@@ -19,6 +23,40 @@ const copyFile = async (targetPath, tempalte, installDir) => {
   });
   spinner.stop();
   log.success("模版拷贝成功");
+};
+
+// 2. 渲染文件
+const ejsRender = (installDir) => {
+  glob(
+    "**",
+    {
+      cwd: installDir,
+      nodir: true,
+      ignore: ["**/public/**", "**/node_modules/**"],
+    },
+    (err, files) => {
+      // 循环遍历文件路径
+      files.forEach((file) => {
+        const filePath = path.resolve(installDir, file);
+        log.verbose("filePath", filePath);
+        ejs.renderFile(
+          filePath,
+          {
+            data: {
+              name: "vue-template",
+            },
+          },
+          (err, result) => {
+            if (err) {
+              log.error(err);
+            } else {
+              fse.writeFileSync(filePath, result);
+            }
+          }
+        );
+      });
+    }
+  );
 };
 
 // 3. 安装模版 先拿到path 再下载
@@ -43,6 +81,9 @@ const installTemplate = async (selectedTemplate, opts) => {
 
   // 2. 拷贝文件
   await copyFile(targetPath, template, installDir);
+
+  // 3. 渲染文件
+  await ejsRender(installDir);
 };
 
 export default installTemplate;
