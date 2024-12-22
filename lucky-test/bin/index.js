@@ -2,4 +2,5 @@
 // require("./inquirerList");
 // require("./readline");
 // require("./generator");
-require("./stepRead");
+// require("./stepRead");
+require("./ejs");
