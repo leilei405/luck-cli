@@ -26,34 +26,34 @@ const copyFile = async (targetPath, tempalte, installDir) => {
 };
 
 // 2. 渲染文件
-const ejsRender = (installDir) => {
+const ejsRender = (installDir, tempalte, customName) => {
+  log.verbose("installDir", installDir, tempalte);
+  const { ignore } = tempalte;
+  const ejsData = {
+    data: {
+      // name: value, // 项目名称
+      name: customName, // 项目名称
+    },
+  };
   glob(
     "**",
     {
       cwd: installDir,
       nodir: true,
-      ignore: ["**/public/**", "**/node_modules/**"],
+      ignore: [...ignore, "**/node_modules/**"],
     },
     (err, files) => {
       // 循环遍历文件路径
       files.forEach((file) => {
         const filePath = path.resolve(installDir, file);
         log.verbose("filePath", filePath);
-        ejs.renderFile(
-          filePath,
-          {
-            data: {
-              name: "vue-template",
-            },
-          },
-          (err, result) => {
-            if (err) {
-              log.error(err);
-            } else {
-              fse.writeFileSync(filePath, result);
-            }
+        ejs.renderFile(filePath, ejsData, (err, result) => {
+          if (err) {
+            log.error(err);
+          } else {
+            fse.writeFileSync(filePath, result);
           }
-        );
+        });
       });
     }
   );
@@ -82,8 +82,8 @@ const installTemplate = async (selectedTemplate, opts) => {
   // 2. 拷贝文件
   await copyFile(targetPath, template, installDir);
 
-  // 3. 渲染文件
-  await ejsRender(installDir);
+  // 3. 渲染文件 name 自己输入的项目名称
+  await ejsRender(installDir, template, name);
 };
 
 export default installTemplate;
