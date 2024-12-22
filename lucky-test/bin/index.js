@@ -3,4 +3,5 @@
 // require("./readline");
 // require("./generator");
 // require("./stepRead");
-require("./ejs");
+// require("./ejs");
+require("./ejs/glob");
