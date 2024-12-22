@@ -34,6 +34,14 @@ const getProjectName = async () => {
   });
 };
 
+// 选择所在团队
+const getTeam = (team) => {
+  return makeList({
+    choices: team.map((_) => ({ name: _, value: _ })),
+    message: "请选择所在团队",
+  });
+};
+
 // 获取模版列表
 const getTemplateList = async (TEMPLATE_LIST) => {
   return makeList({
@@ -98,6 +106,10 @@ const createTemplate = async (name, opts) => {
       }
       log.verbose("我选择的项目模版", selectedTemplate);
     } else {
+      // 获取团队信息
+      let teamList = TEMPLATE_LIST.map((item) => item.team);
+      teamList = [...new Set(teamList)];
+      await getTeam(teamList);
       const addTemplate = await getTemplateList(TEMPLATE_LIST);
       selectedTemplate = TEMPLATE_LIST.find(
         (item) => item.value === addTemplate
