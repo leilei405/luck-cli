@@ -1,5 +1,5 @@
 import Command from "@lucky.com/command";
-import { log, GitHub } from "@lucky.com/utils";
+import { log, GitHub, makeList, getGitPlatform } from "@lucky.com/utils";
 class InstallCommand extends Command {
   get command() {
     return "install";
@@ -9,16 +9,35 @@ class InstallCommand extends Command {
     return "description ";
   }
 
-  get options() {
-    return [
-      ["-g, --global", "是否安装全局", false],
-      ["-d, --dir <dir>", "指定目录", process.cwd()],
-    ];
-  }
+  get options() {}
 
   async action(params) {
-    // const { github } = new GitHub();
-    const { githubApi } = new GitHub();
+    let platform = getGitPlatform();
+    if (!platform) {
+      platform = await makeList({
+        message: "请选择仓库平台",
+        choices: [
+          {
+            name: "Github",
+            value: "github",
+          },
+          {
+            name: "Gitee",
+            value: "gitee",
+          },
+        ],
+      });
+    }
+    log.verbose("platform", platform);
+
+    let gitAPI;
+    if (platform === "github") {
+      gitAPI = new GitHub();
+    } else {
+      //
+    }
+    gitAPI.savePlatform(platform);
+    await gitAPI.init();
   }
 }
 

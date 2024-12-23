@@ -1,31 +1,56 @@
 import path from "node:path";
+import fs from "node:fs";
 import { homedir } from "node:os";
-import { pathExistsSync } from "path-exists";
 import fse from "fs-extra";
+import { pathExistsSync } from "path-exists";
+
+import log from "../log.js";
 import { makePassword } from "../inquirer.js";
 
 const TEMP_HOME = ".lucky-cli";
-const TEMP_TOKEN = ".token";
+const TEMP_TOKEN = ".token_ssh";
+const TEMP_PLATFORM = ".git_platform";
 
+// 获取token路径
 function createTokenPath() {
   return path.resolve(homedir(), TEMP_HOME, TEMP_TOKEN);
 }
 
+// 获取平台路径
+function createPlatformPath() {
+  return path.resolve(homedir(), TEMP_HOME, TEMP_PLATFORM);
+}
+
+function getGitPlatform() {
+  if (pathExistsSync(createPlatformPath())) {
+    return fs.readFileSync(createPlatformPath()).toString();
+  }
+  return null;
+}
+
+// 抽象git服务器
 class GitServer {
-  constructor() {
-    // 判断token是否存在
+  constructor() {}
+
+  // 初始化
+  async init() {
     const tokenPath = createTokenPath();
     if (pathExistsSync(tokenPath)) {
-      this.token = fse.readFileSync(tokenPath);
+      this.token = fse.readFileSync(tokenPath).toString();
     } else {
-      this.getToken().then((token) => {
-        this.token = token;
-        // fse.ensureDirSync(path.resolve(homedir(), TEMP_HOME));
-        // fse.writeFileSync(tokenPath, token);
-      });
+      this.token = await this.getToken();
+      fs.readFileSync(tokenPath, this.token).toString();
     }
+
+    log.verbose("token", this.token);
+    log.verbose("tokenPath", tokenPath, "==", pathExistsSync(tokenPath));
   }
 
+  savePlatform(platform) {
+    fs.writeFileSync(createPlatformPath(), platform);
+  }
+
+  // 获取token
   getToken() {
     return makePassword({
       message: "请输入token",
@@ -33,4 +58,4 @@ class GitServer {
   }
 }
 
-export default GitServer;
+export { GitServer, getGitPlatform };

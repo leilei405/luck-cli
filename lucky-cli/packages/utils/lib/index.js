@@ -4,6 +4,8 @@ import { makeList, makeInput, makePassword } from "./inquirer.js";
 import { getLatestVersion } from "./npm.js";
 import request from "./request.js";
 import GitHub from "./git/GitHub.js";
+import { getGitPlatform } from "./git/gitServer.js";
+// import {}
 
 function printErrorLog(err, errorType) {
   if (isDebug()) {
@@ -23,4 +25,5 @@ export {
   printErrorLog,
   request,
   GitHub,
+  getGitPlatform,
 };
