@@ -1,7 +1,7 @@
 {
-  "name": "@lucky.com/cli",
+  "name": "@lucky.com/install",
   "version": "0.0.0",
-  "description": "lucky cli 脚手架",
+  "description": "lucky-cli 源码下载器",
   "author": "leilei405 <1601178425@qq.com>",
   "homepage": "https://github.com/leilei405/luck-cli#readme",
   "license": "ISC",
@@ -10,33 +10,21 @@
     "lib": "lib",
     "test": "__tests__"
   },
-  "bin": {
-    "lucky-cli": "bin/cli.js"
-  },
+  "type": "module",
   "files": [
-    "lib",
-    "bin"
+    "lib"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/leilei405/luck-cli.git"
   },
   "scripts": {
-    "test": "node ./__tests__/cli.test.js"
+    "test": "node ./__tests__/install.test.js"
   },
   "bugs": {
     "url": "https://github.com/leilei405/luck-cli/issues"
   },
   "dependencies": {
-    "@lucky.com/init": "^0.0.0",
-    "@lucky.com/install": "^0.0.0",
-    "@lucky.com/utils": "^0.0.0",
-    "chalk": "^5.3.0",
-    "commander": "^12.1.0",
-    "dirname-filename-esm": "^1.1.2",
-    "fs-extra": "^11.2.0",
-    "import-local": "^3.2.0",
-    "semver": "^7.6.3"
-  },
-  "type": "module"
+    "@lucky.com/command": "^0.0.0"
+  }
 }
