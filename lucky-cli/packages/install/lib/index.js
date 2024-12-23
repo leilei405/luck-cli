@@ -1,5 +1,5 @@
 import Command from "@lucky.com/command";
-
+import { log, GitHub } from "@lucky.com/utils";
 class InstallCommand extends Command {
   get command() {
     return "install";
@@ -17,7 +17,8 @@ class InstallCommand extends Command {
   }
 
   async action(params) {
-    console.log("params", params);
+    // const { github } = new GitHub();
+    const { githubApi } = new GitHub();
   }
 }
 

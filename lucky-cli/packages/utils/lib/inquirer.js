@@ -31,10 +31,12 @@ const make = ({
 };
 
 const makeList = (params) => {
-  // console.log(params, "params");
   return make({ ...params });
 };
 const makeInput = (params) => {
   return make({ ...params, type: "input" });
 };
-export { makeList, makeInput };
+const makePassword = (params) => {
+  return make({ ...params, type: "password" });
+};
+export { makeList, makeInput, makePassword };

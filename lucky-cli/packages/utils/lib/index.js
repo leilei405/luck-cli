@@ -1,8 +1,9 @@
 import log from "./log.js";
 import isDebug from "./isDebug.js";
-import { makeList, makeInput } from "./inquirer.js";
+import { makeList, makeInput, makePassword } from "./inquirer.js";
 import { getLatestVersion } from "./npm.js";
 import request from "./request.js";
+import GitHub from "./git/GitHub.js";
 
 function printErrorLog(err, errorType) {
   if (isDebug()) {
@@ -17,7 +18,9 @@ export {
   isDebug,
   makeList,
   makeInput,
+  makePassword,
   getLatestVersion,
   printErrorLog,
   request,
+  GitHub,
 };
