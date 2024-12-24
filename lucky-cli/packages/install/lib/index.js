@@ -1,5 +1,5 @@
 import Command from "@lucky.com/command";
-import { log, GitHub, makeList, getGitPlatform } from "@lucky.com/utils";
+import { log, GitHub, makeList, getGitPlatform, Gitee } from "@lucky.com/utils";
 class InstallCommand extends Command {
   get command() {
     return "install";
@@ -34,18 +34,20 @@ class InstallCommand extends Command {
     if (platform === "github") {
       gitAPI = new GitHub();
     } else {
-      //
+      gitAPI = new Gitee();
     }
     gitAPI.savePlatform(platform);
     await gitAPI.init();
 
     const searchResult = await gitAPI.searchRepositories({
-      q: "vue+language:vue",
+      q: "vue ",
+      language: "JavaScript",
       order: "desc",
-      sort: "stars",
-      per_page: 5,
+      sort: "stars_count",
+      per_page: 2,
       page: 1,
     });
+
     console.log(searchResult);
   }
 }

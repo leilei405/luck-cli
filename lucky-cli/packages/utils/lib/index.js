@@ -4,6 +4,7 @@ import { makeList, makeInput, makePassword } from "./inquirer.js";
 import { getLatestVersion } from "./npm.js";
 import request from "./request.js";
 import GitHub from "./git/GitHub.js";
+import Gitee from "./git/Gitee.js";
 import { getGitPlatform } from "./git/gitServer.js";
 // import {}
 
@@ -26,4 +27,5 @@ export {
   request,
   GitHub,
   getGitPlatform,
+  Gitee,
 };
