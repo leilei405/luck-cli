@@ -39,7 +39,7 @@ class GitServer {
       this.token = fse.readFileSync(tokenPath).toString();
     } else {
       this.token = await this.getToken();
-      fs.readFileSync(tokenPath, this.token).toString();
+      fs.writeFileSync(tokenPath, this.token);
     }
 
     log.verbose("token", this.token);
