@@ -35,8 +35,17 @@ class Gitee extends GitServer {
     });
   }
 
-  post(url, params) {
-    return this.service({ url, params, method: "post" });
+  post(url, data, headers) {
+    return this.service({
+      url,
+      data,
+      params: {
+        ...data,
+        access_token: this.token,
+      },
+      method: "post",
+      headers,
+    });
   }
 
   searchRepositories(params) {

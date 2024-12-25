@@ -1,5 +1,12 @@
 import Command from "@lucky.com/command";
-import { log, GitHub, makeList, getGitPlatform, Gitee } from "@lucky.com/utils";
+import {
+  log,
+  GitHub,
+  makeList,
+  getGitPlatform,
+  Gitee,
+  makeInput,
+} from "@lucky.com/utils";
 class InstallCommand extends Command {
   get command() {
     return "install";
@@ -12,6 +19,11 @@ class InstallCommand extends Command {
   get options() {}
 
   async action(params) {
+    await this.generateGitApi();
+    await this.searchGitApi();
+  }
+
+  async generateGitApi() {
     let platform = getGitPlatform();
     if (!platform) {
       platform = await makeList({
@@ -38,15 +50,57 @@ class InstallCommand extends Command {
     }
     gitAPI.savePlatform(platform);
     await gitAPI.init();
+    this.gitAPI = gitAPI;
+  }
 
-    const searchResult = await gitAPI.searchRepositories({
-      q: "vue ",
-      language: "JavaScript",
-      order: "desc",
-      sort: "stars_count",
-      per_page: 2,
-      page: 1,
+  async searchGitApi() {
+    // 关键字
+    const keyword = await makeInput({
+      message: "请输入搜索关键字",
+      validate: (val) => {
+        if (!val) {
+          return "请输入搜索关键字";
+        }
+        return true;
+      },
     });
+
+    // 编程语言
+    const language = await makeInput({
+      message: "请输入搜索语言",
+    });
+
+    log.verbose(language, "language", keyword, "keyword");
+    log.verbose(this.gitAPI.getPlatform(), "getPlatform");
+
+    const platform = this.gitAPI.getPlatform();
+    let searchResult;
+    this.page = 1;
+
+    // 判断走 GITEE 还是 GITHUB
+    if (platform === "github") {
+      const params = {
+        q: keyword + (language ? `+language:${language}` : ""),
+        order: "desc",
+        per_page: 2,
+        page: 1,
+        sort: "count",
+      };
+      console.log(params, "githubParams");
+      searchResult = await this.gitAPI.searchRepositories(params);
+    }
+
+    if (platform === "gitee") {
+      const params = {
+        q: keyword + (language ? `+language:${language}` : ""),
+        order: "desc",
+        per_page: 5,
+        page: 1,
+        sort: "stars_count",
+      };
+      console.log(params, "giteeParams");
+      searchResult = await this.gitAPI.searchRepositories(params);
+    }
 
     console.log(searchResult);
   }

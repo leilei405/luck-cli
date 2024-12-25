@@ -6,7 +6,6 @@ import request from "./request.js";
 import GitHub from "./git/GitHub.js";
 import Gitee from "./git/Gitee.js";
 import { getGitPlatform } from "./git/gitServer.js";
-// import {}
 
 function printErrorLog(err, errorType) {
   if (isDebug()) {

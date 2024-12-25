@@ -46,8 +46,15 @@ class GitServer {
     log.verbose("tokenPath", tokenPath, "==", pathExistsSync(tokenPath));
   }
 
+  // 保存平台
   savePlatform(platform) {
+    this.platform = platform;
     fs.writeFileSync(createPlatformPath(), platform);
+  }
+
+  // 获取平台
+  getPlatform() {
+    return this.platform;
   }
 
   // 获取token
