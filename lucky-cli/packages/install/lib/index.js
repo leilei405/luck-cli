@@ -24,7 +24,7 @@ class InstallCommand extends Command {
 
   get options() {}
 
-  async action(params) {
+  async action() {
     await this.generateGitApi();
     await this.searchGitApi();
   }
@@ -193,6 +193,7 @@ class InstallCommand extends Command {
         };
       });
       totalCount = searchResult.total_count; // 总条数
+      console.log(projectList, '===projectList==', totalCount)
     }
   }
 
@@ -209,6 +210,7 @@ class InstallCommand extends Command {
   }
 }
 
+  // 导出实例
 function Install(instance) {
   return new InstallCommand(instance);
 }
