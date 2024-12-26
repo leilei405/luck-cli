@@ -42,8 +42,14 @@ class GitHub extends GitServer {
     return this.service({ url, params, method: "post" });
   }
 
+  // 搜索仓库
   searchRepositories(params) {
     return this.get("/search/repositories", params);
+  }
+
+  // 搜索源码
+  searchCode(params) {
+    return this.get("/search/code", params);
   }
 }
 

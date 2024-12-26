@@ -10,6 +10,8 @@ import {
 
 const PREV_PAGE = "${prev_page}"; // 上一页
 const NEXT_PAGE = "${next_page}"; // 下一页
+const SEARCH_MODE_REPO = "search_repo"; // 搜索仓库
+const SEARCH_MODE_CODE = "search_code"; // 搜索用户
 
 class InstallCommand extends Command {
   get command() {
@@ -58,6 +60,25 @@ class InstallCommand extends Command {
   }
 
   async searchGitApi() {
+    // 搜索模式
+    const platform = this.gitAPI.getPlatform();
+    if (platform === "github") {
+      this.mode = await makeList({
+        message: "请选择搜索模式",
+        choices: [
+          {
+            name: "搜索仓库",
+            value: SEARCH_MODE_REPO,
+          },
+          {
+            name: "搜索源码",
+            value: SEARCH_MODE_CODE,
+          },
+        ],
+      });
+    } else {
+      this.mode = SEARCH_MODE_REPO;
+    }
     // 关键字
     this.searchKeyword = await makeInput({
       message: "请输入搜索关键字",
@@ -73,17 +94,10 @@ class InstallCommand extends Command {
       message: "请输入搜索语言",
     });
     this.page = 1; // 当前页码
-    this.perPage = 2; // 每页条数
+    this.perPage = 5; // 每页条数
 
     // log日志
-    log.verbose(
-      "language",
-      this.language,
-      "searchKeyword",
-      this.searchKeyword,
-      "getPlatform",
-      this.gitAPI.getPlatform()
-    );
+    log.verbose("searchResult", this.language, this.searchKeyword, platform);
 
     await this.doSearch();
   }
@@ -105,15 +119,34 @@ class InstallCommand extends Command {
         page: this.page,
         sort: "stars",
       };
+
       log.verbose("githubParams", params);
-      searchResult = await this.gitAPI.searchRepositories(params);
+      if (this.mode === SEARCH_MODE_REPO) {
+        searchResult = await this.gitAPI.searchRepositories(params);
+        projectList = searchResult.items.map((item) => {
+          return {
+            name: "名称：" + item.name + "描述：" + item.description,
+            value: item.full_name,
+          };
+        });
+      } else {
+        searchResult = await this.gitAPI.searchCode(params);
+        projectList = searchResult.items.map((item) => {
+          return {
+            name:
+              "名称：" +
+              item.repository.full_name +
+              "  描述：" +
+              (item.repository.description
+                ? item.repository.description
+                : "没有描述信息哦😯"),
+            value: item.repository.full_name,
+          };
+        });
+      }
       totalCount = searchResult.total_count; // 总条数
-      projectList = searchResult.items.map((item) => {
-        return {
-          name: `项目名称：${item.name} ＋ 描述：${item.description}`,
-          value: item.full_name,
-        };
-      });
+      console.log("searchResult", searchResult);
+      log.verbose(`搜索结果数量统计 ${totalCount} 条`);
     }
 
     // 判断当前页面是否为最大页数
@@ -161,9 +194,6 @@ class InstallCommand extends Command {
       });
       totalCount = searchResult.total_count; // 总条数
     }
-    log.verbose("totalCount", totalCount);
-    console.log(searchResult);
-    console.log(projectList, "===projectList==");
   }
 
   // 下一页
