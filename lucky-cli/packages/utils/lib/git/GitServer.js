@@ -49,7 +49,12 @@ class GitServer {
   // 保存平台
   savePlatform(platform) {
     this.platform = platform;
-    fs.writeFileSync(createPlatformPath(), platform);
+    const platformPath = createPlatformPath();
+    const dir = path.dirname(platformPath);
+    if (!pathExistsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(platformPath, platform);
   }
 
   // 获取平台

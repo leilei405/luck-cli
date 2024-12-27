@@ -27,6 +27,7 @@ class InstallCommand extends Command {
   async action() {
     await this.generateGitApi();
     await this.searchGitApi();
+    console.log(this.keyword, '===this.keyword===')
   }
 
   async generateGitApi() {
@@ -46,7 +47,7 @@ class InstallCommand extends Command {
         ],
       });
     }
-    log.verbose("platform", platform);
+    log.verbose("当前选择的Git平台", platform);
 
     let gitAPI;
     if (platform === "github") {
@@ -54,11 +55,13 @@ class InstallCommand extends Command {
     } else {
       gitAPI = new Gitee();
     }
+
     gitAPI.savePlatform(platform);
     await gitAPI.init();
     this.gitAPI = gitAPI;
   }
 
+  // 搜索模式 & 关键字 & 编程语言
   async searchGitApi() {
     // 搜索模式
     const platform = this.gitAPI.getPlatform();
@@ -103,13 +106,14 @@ class InstallCommand extends Command {
   }
 
   async doSearch() {
-    const platform = this.gitAPI.getPlatform();
-    let searchResult;
-    let totalCount = 0;
-    let projectList = [];
+    const platform = this.gitAPI.getPlatform(); // 平台
+    let searchResult; // 搜索结果
+    let totalCount = 0; // 总条数
+    let projectList = []; // 项目列表
 
     // 判断走 GITEE 还是 GITHUB
     if (platform === "github") {
+      // 搜索参数
       const params = {
         q:
           this.searchKeyword +
@@ -119,8 +123,9 @@ class InstallCommand extends Command {
         page: this.page,
         sort: "stars",
       };
+      log.verbose("GitHub查询参数", params);
 
-      log.verbose("githubParams", params);
+      // 判断走搜索仓库还是搜索源码
       if (this.mode === SEARCH_MODE_REPO) {
         searchResult = await this.gitAPI.searchRepositories(params);
         projectList = searchResult.items.map((item) => {
@@ -144,9 +149,32 @@ class InstallCommand extends Command {
           };
         });
       }
+      totalCount = searchResult.total_count;
+      log.verbose(`GitHub搜索结果数量统计 ${totalCount} 条`);
+    } else {
+      const params = {
+        q: this.searchKeyword,
+        // language: this.language ? `language:${this.language}` : "",
+        sort: "stars_count",
+        order: "desc",
+        per_page: this.perPage,
+        page: this.page,
+      };
+      if (this.language) {
+        params.language = this.language;
+      }
+      log.verbose("gitee查询参数", params);
+      searchResult = await this.gitAPI.searchRepositories(params);
+      console.log('searchResult', searchResult)
+      projectList = searchResult.items.map((item) => {
+        return {
+          name: `项目名称：${item.name} ＋ 描述 ：${item.description}`,
+          value: item.full_name,
+        };
+      });
       totalCount = searchResult.total_count; // 总条数
-      console.log("searchResult", searchResult);
-      log.verbose(`搜索结果数量统计 ${totalCount} 条`);
+      log.verbose(`Gitee搜索结果数量统计 ${totalCount} 条`);
+      console.log('searchResult', searchResult)
     }
 
     // 判断当前页面是否为最大页数
@@ -163,37 +191,19 @@ class InstallCommand extends Command {
       });
     }
 
-    const keyword = await makeList({
-      message: `请选择要下载的项目，(共 ${totalCount} 条数据)`,
-      choices: projectList,
-    });
-
-    if (keyword === NEXT_PAGE) {
-      await this.nextPage();
-    } else if (keyword === PREV_PAGE) {
-      await this.prevPage();
-    } else {
-      // 下载项目
-    }
-
-    if (platform === "gitee") {
-      const params = {
-        q: keyword + (language ? `+language:${language}` : ""),
-        order: "desc",
-        per_page: this.perPage,
-        page: this.page,
-        sort: "stars_count",
-      };
-      log.verbose("giteeParams", params);
-      searchResult = await this.gitAPI.searchRepositories(params);
-      projectList = searchResult.items.map((item) => {
-        return {
-          name: `项目名称：${item.name} ＋ 描述 ：${item.description}`,
-          value: item.full_name,
-        };
+    if (totalCount > 0) {
+      const keyword = await makeList({
+        message: `请选择要下载的项目，(共 ${totalCount} 条数据)`,
+        choices: projectList,
       });
-      totalCount = searchResult.total_count; // 总条数
-      console.log(projectList, '===projectList==', totalCount)
+
+      if (keyword === NEXT_PAGE) {
+        await this.nextPage();
+      } else if (keyword === PREV_PAGE) {
+        await this.prevPage();
+      } else {
+        this.keyword = keyword;
+      }
     }
   }
 
@@ -210,7 +220,7 @@ class InstallCommand extends Command {
   }
 }
 
-  // 导出实例
+// 导出实例
 function Install(instance) {
   return new InstallCommand(instance);
 }

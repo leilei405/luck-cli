@@ -9,7 +9,7 @@ class Gitee extends GitServer {
     super();
     this.service = axios.create({
       baseURL: BASE_URL,
-      timeout: 3000,
+      timeout: 5000,
     });
 
     // 添加响应拦截器
@@ -17,8 +17,8 @@ class Gitee extends GitServer {
       (response) => {
         return response.data;
       },
-      (err) => {
-        return Promise.reject(err);
+      (error) => {
+        return Promise.reject(error);
       }
     );
   }
