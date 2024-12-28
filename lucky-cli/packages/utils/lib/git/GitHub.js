@@ -51,6 +51,11 @@ class GitHub extends GitServer {
   searchCode(params) {
     return this.get("/search/code", params);
   }
+
+  // 获取仓库的tags
+  getTags(fullName, params) {
+    return this.get("/repos/" + fullName + "/tags", params);
+  }
 }
 
 export default GitHub;

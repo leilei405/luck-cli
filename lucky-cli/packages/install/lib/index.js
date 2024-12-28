@@ -8,8 +8,8 @@ import {
   makeInput,
 } from "@lucky.com/utils";
 
-const PREV_PAGE = "${prev_page}"; // 上一页
-const NEXT_PAGE = "${next_page}"; // 下一页
+const PREV_PAGE = "prev_page"; // 上一页
+const NEXT_PAGE = "next_page"; // 下一页
 const SEARCH_MODE_REPO = "search_repo"; // 搜索仓库
 const SEARCH_MODE_CODE = "search_code"; // 搜索用户
 
@@ -27,9 +27,10 @@ class InstallCommand extends Command {
   async action() {
     await this.generateGitApi();
     await this.searchGitApi();
-    console.log(this.keyword, '===this.keyword===')
+    await this.selectProjectTags();
   }
 
+  // 生成GitApi
   async generateGitApi() {
     let platform = getGitPlatform();
     if (!platform) {
@@ -97,7 +98,7 @@ class InstallCommand extends Command {
       message: "请输入搜索语言",
     });
     this.page = 1; // 当前页码
-    this.perPage = 5; // 每页条数
+    this.perPage = 3; // 每页条数
 
     // log日志
     log.verbose("searchResult", this.language, this.searchKeyword, platform);
@@ -105,6 +106,60 @@ class InstallCommand extends Command {
     await this.doSearch();
   }
 
+  // 选择项目的tags
+  async selectProjectTags() {
+    this.tagPage = 1; // 当前tag页码
+    this.tagPerPage = 20; // 每页tag条数
+    if (this.gitAPI.getPlatform() === 'github') {
+      await this.doSelectTags()
+    } else {
+
+    }
+  }
+
+  // 选择tags
+  async doSelectTags () {
+    const tagsParams ={
+      page: this.tagPage,
+      per_page: this.tagPerPage,
+    }
+
+    const tagList = await this.gitAPI.getTags(this.keyword, tagsParams);
+    const tagsListChoices = tagList.map((item) => ({
+      name: item.name,
+      value: item.name,
+    }));
+
+    // 插入上一页下一页
+    if (tagList.length > 0) {
+      tagsListChoices.push({
+        name: '下一页',
+        value: NEXT_PAGE
+      })
+    }
+    if (this.tagPage > 1) {
+      tagsListChoices.unshift({
+        name: '上一页',
+        value: PREV_PAGE
+      })
+    }
+
+    // 选中的tags
+    const selectedTag = await makeList({
+      message: "请选择要下载的版本",
+      choices: tagsListChoices
+    });
+
+    if (selectedTag === NEXT_PAGE) {
+      await this.nextTags();
+    } else if (selectedTag === PREV_PAGE) {
+      await this.prevTags();
+    } else {
+      this.selectedTag = selectedTag
+    }
+  }
+
+  // 搜索仓库 源码
   async doSearch() {
     const platform = this.gitAPI.getPlatform(); // 平台
     let searchResult; // 搜索结果
@@ -178,12 +233,14 @@ class InstallCommand extends Command {
     }
 
     // 判断当前页面是否为最大页数
-    if (this.page * this.perPage < totalCount) {
+    if (platform === 'github' && this.page * this.perPage < totalCount || projectList.length > 0) {
       projectList.push({
         name: "下一页",
         value: NEXT_PAGE,
       });
     }
+
+    // 判断当前页面是否为第一页
     if (this.page > 1) {
       projectList.unshift({
         name: "上一页",
@@ -191,6 +248,9 @@ class InstallCommand extends Command {
       });
     }
 
+
+
+    // 选择项目
     if (totalCount > 0) {
       const keyword = await makeList({
         message: platform === 'github' ? `请选择要下载的项目，(共 ${totalCount} 条数据)` : '请选择要下载的项目',
@@ -207,16 +267,28 @@ class InstallCommand extends Command {
     }
   }
 
-  // 下一页
+  // github gitee 下一页
   async nextPage() {
     this.page++;
     await this.doSearch();
   }
 
-  // 上一页
+  // github gitee 上一页
   async prevPage() {
     this.page--;
     await this.doSearch();
+  }
+
+  // tags下一页
+  async nextTags () {
+    this.tagPage++;
+    await this.doSelectTags();
+  }
+
+  // tags上一页
+  async prevTags () {
+    this.tagPage--;
+    await this.doSelectTags();
   }
 }
 
