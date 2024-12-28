@@ -6,6 +6,7 @@ import {
   getGitPlatform,
   Gitee,
   makeInput,
+
 } from "@lucky.com/utils";
 
 const PREV_PAGE = "prev_page"; // 上一页
@@ -28,6 +29,8 @@ class InstallCommand extends Command {
     await this.generateGitApi();
     await this.searchGitApi();
     await this.selectProjectTags();
+    log.verbose('keyword', this.keyword)
+    log.verbose('selectTag', this.selectedTag)
   }
 
   // 生成GitApi
@@ -108,40 +111,61 @@ class InstallCommand extends Command {
 
   // 选择项目的tags
   async selectProjectTags() {
-    this.tagPage = 1; // 当前tag页码
-    this.tagPerPage = 20; // 每页tag条数
-    if (this.gitAPI.getPlatform() === 'github') {
-      await this.doSelectTags()
-    } else {
-
-    }
+    this.tagPage = 1;
+    this.tagPerPage = 20;
+    await this.doSelectTags()
   }
 
   // 选择tags
   async doSelectTags () {
-    const tagsParams ={
-      page: this.tagPage,
-      per_page: this.tagPerPage,
-    }
+    const platform = this.gitAPI.getPlatform()
+    let tagsListChoices = []
+    // 判断走github还是gitee分支
+    if (platform === 'github') {
+      const tagsParams ={
+        page: this.tagPage,
+        per_page: this.tagPerPage,
+      }
 
-    const tagList = await this.gitAPI.getTags(this.keyword, tagsParams);
-    const tagsListChoices = tagList.map((item) => ({
-      name: item.name,
-      value: item.name,
-    }));
+      const tagList = await this.gitAPI.getTags(this.keyword, tagsParams);
+      tagsListChoices = tagList.map((item) => ({
+        name: item.name,
+        value: item.name,
+      }));
 
-    // 插入上一页下一页
-    if (tagList.length > 0) {
-      tagsListChoices.push({
-        name: '下一页',
-        value: NEXT_PAGE
-      })
-    }
-    if (this.tagPage > 1) {
-      tagsListChoices.unshift({
-        name: '上一页',
-        value: PREV_PAGE
-      })
+      // 插入上一页下一页
+      if (tagList.length > 0) {
+        tagsListChoices.push({
+          name: '下一页',
+          value: NEXT_PAGE
+        })
+      }
+
+      if (this.tagPage > 1) {
+        tagsListChoices.unshift({
+          name: '上一页',
+          value: PREV_PAGE
+        })
+      }
+    } else {
+      const tagList = await this.gitAPI.getTags(this.keyword);
+      tagsListChoices = tagList.map((item) => ({
+        name: item.name,
+        value: item.name,
+      }));
+      // 插入上一页下一页
+      if (tagList.length > 0) {
+        tagsListChoices.push({
+          name: '下一页',
+          value: NEXT_PAGE
+        })
+      }
+      if (this.tagPage > 1) {
+        tagsListChoices.unshift({
+          name: '上一页',
+          value: PREV_PAGE
+        })
+      }
     }
 
     // 选中的tags
@@ -161,10 +185,10 @@ class InstallCommand extends Command {
 
   // 搜索仓库 源码
   async doSearch() {
-    const platform = this.gitAPI.getPlatform(); // 平台
-    let searchResult; // 搜索结果
-    let totalCount = 0; // 总条数
-    let projectList = []; // 项目列表
+    const platform = this.gitAPI.getPlatform();
+    let searchResult;
+    let totalCount = 0;
+    let projectList = [];
 
     // 判断走 GITEE 还是 GITHUB
     if (platform === "github") {
@@ -217,6 +241,8 @@ class InstallCommand extends Command {
       };
       if (this.language) {
         params.language = this.language;
+      } else {
+        delete params.language
       }
       log.verbose("gitee查询参数", params);
       searchResult = await this.gitAPI.searchRepositories(params);
