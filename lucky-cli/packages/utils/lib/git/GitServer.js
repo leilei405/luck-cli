@@ -28,6 +28,21 @@ function getGitPlatform() {
   return null;
 }
 
+function getProjectPath(cwd, fullName) {
+  const projectName = fullName.split('/')[1]; // reactjs/react => react
+  return path.resolve(cwd, projectName);
+
+}
+
+function getPackageJson (cwd, fullName) {
+  const projectPath = getProjectPath(cwd, fullName);
+  const pkgPath = path.resolve(projectPath, 'package.json')
+  if (pathExistsSync(pkgPath)) {
+    return fse.readJsonSync(pkgPath)
+  }
+  return null
+}
+
 // 抽象git服务器
 class GitServer {
   constructor() {}
@@ -86,13 +101,32 @@ class GitServer {
 
   // 安装依赖
   installDependencies (cwd, fullName) {
-    const projectName = fullName.split('/')[1]; // reactjs/react => react
-    const projectPath = path.resolve(cwd, projectName);
+    const projectPath = getProjectPath(cwd, fullName)
+
     if (pathExistsSync(projectPath)) {
       return execa('npm', ['install'], { cwd: projectPath })
     }
     return null
   }
+
+  // 启动项目
+  runRepo(cwd, fullName) {
+    const projectPath = getProjectPath(cwd, fullName)
+    const pkg = getPackageJson(cwd, fullName);
+    if (pkg) {
+      const { script } = pkg
+      if (script && script.dev) {
+        // stdout: 'inherit' 继承当前控制台的输出流
+        return execa('npm', ['run', 'dev'], { cwd: projectPath, stdout: 'inherit' })
+      } else if (script && script.start) {
+        return execa('npm', ['start'], { cwd: projectPath, stdout: 'inherit' })
+      } else {
+        log.warn('未找到启动命令')
+      }
+    }
+  }
 }
+
+
 
 export { GitServer, getGitPlatform };

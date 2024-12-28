@@ -34,6 +34,7 @@ class InstallCommand extends Command {
     log.verbose('keyword', this.keyword)
     log.verbose('selectTag', this.selectedTag)
     await this.installDependencies();
+    // await this.runRepo();
   }
 
   // 下载指定版本
@@ -61,6 +62,11 @@ class InstallCommand extends Command {
       log.error(`安装失败 ${this.keyword} 版本：${this.selectedTag}`);
       printErrorLog(err)
     }
+  }
+
+  // 启动项目
+  async runRepo ( ) {
+    await this.gitAPI.runRepo(process.cwd(), this.keyword);
   }
 
   // 生成GitApi
@@ -131,7 +137,7 @@ class InstallCommand extends Command {
       message: "请输入搜索语言",
     });
     this.page = 1; // 当前页码
-    this.perPage = 3; // 每页条数
+    this.perPage = 10; // 每页条数
 
     // log日志
     log.verbose("searchResult", this.language, this.searchKeyword, platform);
