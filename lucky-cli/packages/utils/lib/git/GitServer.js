@@ -75,12 +75,23 @@ class GitServer {
     return `https://${platform}.com/${fullName}.git`
   }
 
+  // 克隆仓库
   cloneRepo(fullName, tag) {
     if (tag) {
       return execa('git', ['clone', this.getRepoUrl(fullName), '-b', tag])
     } else {
       return execa('git', ['clone', this.getRepoUrl(fullName), '-b'])
     }
+  }
+
+  // 安装依赖
+  installDependencies (cwd, fullName) {
+    const projectName = fullName.split('/')[1]; // reactjs/react => react
+    const projectPath = path.resolve(cwd, projectName);
+    if (pathExistsSync(projectPath)) {
+      return execa('npm', ['install'], { cwd: projectPath })
+    }
+    return null
   }
 }
 

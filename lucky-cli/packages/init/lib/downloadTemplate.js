@@ -35,6 +35,7 @@ const downloadAddTemplate = async (targetPath, selectedTemplate) => {
 export default async function downloadTemplate(selectedTemplate) {
   // 1. 下载模版 先拿到path 再下载
   const { targetPath, template } = selectedTemplate;
+  makeCacheDir(targetPath);
   const spinner = ora("正在下载模版...").start();
   try {
     await downloadAddTemplate(targetPath, template);
