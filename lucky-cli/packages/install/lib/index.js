@@ -33,17 +33,32 @@ class InstallCommand extends Command {
     await this.downLoadRepo();
     log.verbose('keyword', this.keyword)
     log.verbose('selectTag', this.selectedTag)
+    await this.installDependencies();
   }
 
   // 下载指定版本
   async downLoadRepo () {
-    const spinner = ora(`正在下载 ${this.keyword} 版本：${this.selectedTag} .....`).start()
+    const spinner = ora(`正在下载  ${this.keyword} 版本：${this.selectedTag} .....`).start()
     try {
       await this.gitAPI.cloneRepo(this.keyword, this.selectedTag)
       spinner.stop();
-      log.success('下载成功');
+      log.success(`下载成功${this.keyword} 版本：${this.selectedTag}`);
     } catch (err) {
       spinner.stop();
+      printErrorLog(err)
+    }
+  }
+
+  // 安装依赖
+  async installDependencies () {
+    const spinner = ora(`正在安装依赖 ${this.keyword} 版本：${this.selectedTag} .....`).start();
+    try {
+      await this.gitAPI.installDependencies(process.cwd(), this.keyword, this.selectedTag)
+      spinner.stop();
+      log.success(`安装成功 ${this.keyword} 版本：${this.selectedTag}`);
+    } catch (err) {
+      spinner.stop();
+      log.error(`安装失败 ${this.keyword} 版本：${this.selectedTag}`);
       printErrorLog(err)
     }
   }
@@ -133,8 +148,8 @@ class InstallCommand extends Command {
 
   // 选择tags
   async doSelectTags () {
-    const platform = this.gitAPI.getPlatform()
-    let tagsListChoices = []
+    const platform = this.gitAPI.getPlatform();
+    let tagsListChoices = [];
     // 判断走github还是gitee分支
     if (platform === 'github') {
       const tagsParams ={
