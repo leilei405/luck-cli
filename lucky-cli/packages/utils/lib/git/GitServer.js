@@ -2,8 +2,8 @@ import path from "node:path";
 import fs from "node:fs";
 import { homedir } from "node:os";
 import fse from "fs-extra";
+import { execa } from 'execa'
 import { pathExistsSync } from "path-exists";
-
 import log from "../log.js";
 import { makePassword } from "../inquirer.js";
 
@@ -67,6 +67,20 @@ class GitServer {
     return makePassword({
       message: "请输入token",
     });
+  }
+
+  // 获取仓库地址
+  getRepoUrl(fullName) {
+    const platform =this.getPlatform()
+    return `https://${platform}.com/${fullName}.git`
+  }
+
+  cloneRepo(fullName, tag) {
+    if (tag) {
+      return execa('git', ['clone', this.getRepoUrl(fullName), '-b', tag])
+    } else {
+      return execa('git', ['clone', this.getRepoUrl(fullName), '-b'])
+    }
   }
 }
 

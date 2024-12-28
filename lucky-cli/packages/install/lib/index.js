@@ -29,8 +29,14 @@ class InstallCommand extends Command {
     await this.generateGitApi();
     await this.searchGitApi();
     await this.selectProjectTags();
+    await this.downLoadRepo();
     log.verbose('keyword', this.keyword)
     log.verbose('selectTag', this.selectedTag)
+  }
+
+  // 下载指定版本
+  async downLoadRepo () {
+    await this.gitAPI.cloneRepo(this.keyword, this.selectedTag)
   }
 
   // 生成GitApi
