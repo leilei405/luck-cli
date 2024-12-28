@@ -1,3 +1,4 @@
+import ora from 'ora'
 import Command from "@lucky.com/command";
 import {
   log,
@@ -5,7 +6,7 @@ import {
   makeList,
   getGitPlatform,
   Gitee,
-  makeInput,
+  makeInput, printErrorLog,
 
 } from "@lucky.com/utils";
 
@@ -36,7 +37,15 @@ class InstallCommand extends Command {
 
   // 下载指定版本
   async downLoadRepo () {
-    await this.gitAPI.cloneRepo(this.keyword, this.selectedTag)
+    const spinner = ora(`正在下载 ${this.keyword} 版本：${this.selectedTag} .....`).start()
+    try {
+      await this.gitAPI.cloneRepo(this.keyword, this.selectedTag)
+      spinner.stop();
+      log.success('下载成功');
+    } catch (err) {
+      spinner.stop();
+      printErrorLog(err)
+    }
   }
 
   // 生成GitApi
