@@ -154,7 +154,7 @@ class InstallCommand extends Command {
     } else {
       const params = {
         q: this.searchKeyword,
-        // language: this.language ? `language:${this.language}` : "",
+        language: this.language ? `language:${this.language}` : "",
         sort: "stars_count",
         order: "desc",
         per_page: this.perPage,
@@ -166,13 +166,13 @@ class InstallCommand extends Command {
       log.verbose("gitee查询参数", params);
       searchResult = await this.gitAPI.searchRepositories(params);
       console.log('searchResult', searchResult)
-      projectList = searchResult.items.map((item) => {
+      projectList = searchResult.map((item) => {
         return {
           name: `项目名称：${item.name} ＋ 描述 ：${item.description}`,
           value: item.full_name,
         };
       });
-      totalCount = searchResult.total_count; // 总条数
+      totalCount = 9999; // 总条数
       log.verbose(`Gitee搜索结果数量统计 ${totalCount} 条`);
       console.log('searchResult', searchResult)
     }
@@ -193,7 +193,7 @@ class InstallCommand extends Command {
 
     if (totalCount > 0) {
       const keyword = await makeList({
-        message: `请选择要下载的项目，(共 ${totalCount} 条数据)`,
+        message: platform === 'github' ? `请选择要下载的项目，(共 ${totalCount} 条数据)` : '请选择要下载的项目',
         choices: projectList,
       });
 
