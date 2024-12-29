@@ -16,11 +16,12 @@ function createTokenPath() {
   return path.resolve(homedir(), TEMP_HOME, TEMP_TOKEN);
 }
 
-// 获取平台路径
+// 创建平台路径
 function createPlatformPath() {
   return path.resolve(homedir(), TEMP_HOME, TEMP_PLATFORM);
 }
 
+// 获取平台
 function getGitPlatform() {
   if (pathExistsSync(createPlatformPath())) {
     return fs.readFileSync(createPlatformPath()).toString();
@@ -28,12 +29,14 @@ function getGitPlatform() {
   return null;
 }
 
+// 获取项目路径
 function getProjectPath(cwd, fullName) {
   const projectName = fullName.split('/')[1]; // reactjs/react => react
   return path.resolve(cwd, projectName);
 
 }
 
+// 获取package.json
 function getPackageJson (cwd, fullName) {
   const projectPath = getProjectPath(cwd, fullName);
   const pkgPath = path.resolve(projectPath, 'package.json')
@@ -102,19 +105,25 @@ class GitServer {
   // 安装依赖
   installDependencies (cwd, fullName) {
     const projectPath = getProjectPath(cwd, fullName)
-
     if (pathExistsSync(projectPath)) {
-      return execa('npm', ['install'], { cwd: projectPath })
+      return execa('npm', ['install', '--registry=https://registry.npmmirror.com'], { cwd: projectPath })
     }
     return null
   }
 
   // 启动项目
-  runRepo(cwd, fullName) {
+  async runRepo(cwd, fullName) {
     const projectPath = getProjectPath(cwd, fullName)
     const pkg = getPackageJson(cwd, fullName);
     if (pkg) {
-      const { script } = pkg
+      const { script, bin, name } = pkg
+      if (bin && bin.start) {
+         await execa(
+            'npm',
+            ['install', '-g', name, '--registry=https://registry.npmmirror.com'],
+            { cwd: projectPath, stdout: 'inherit' }
+        )
+      }
       if (script && script.dev) {
         // stdout: 'inherit' 继承当前控制台的输出流
         return execa('npm', ['run', 'dev'], { cwd: projectPath, stdout: 'inherit' })

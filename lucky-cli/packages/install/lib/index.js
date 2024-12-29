@@ -236,7 +236,7 @@ class InstallCommand extends Command {
         order: "desc",
         per_page: this.perPage,
         page: this.page,
-        sort: "stars",
+        // sort: "stars",
       };
       log.verbose("GitHub查询参数", params);
 
@@ -270,7 +270,7 @@ class InstallCommand extends Command {
       const params = {
         q: this.searchKeyword,
         language: this.language ? `language:${this.language}` : "",
-        sort: "stars_count",
+        // sort: "stars_count",
         order: "desc",
         per_page: this.perPage,
         page: this.page,
