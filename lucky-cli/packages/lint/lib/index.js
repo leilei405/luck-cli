@@ -4,6 +4,7 @@ import { log } from "@lucky.com/utils";
 
 const { ESLint } = pkg;
 /**
+ * @description: 测试命令
  * 交互式创建项目: lucky-cli lint
  */
 class LintCommand extends Command {
