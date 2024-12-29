@@ -1,9 +1,12 @@
 import pkg from 'eslint';
+import execaPkg from 'execa'
+import ora from 'ora';
 import Command from "@lucky.com/command";
-import { log } from "@lucky.com/utils";
+import { log, printErrorLog } from "@lucky.com/utils";
 import overrideConfig from './eslint/vue-config.js';
 
 const { ESLint } = pkg;
+const { execa } = execaPkg;
 /**
  * @description: 测试命令
  * 交互式创建项目: lucky-cli lint
@@ -50,13 +53,24 @@ class LintCommand extends Command {
 
   async action([name, otherArgs]) {
     log.verbose('lint');
-    const cwd = process.cwd()
-    console.log('cwd',cwd)
+    const spinner = ora('正在安装依赖').start();
+    try {
+      await execa('npm', ['install', '-D', 'eslint-plugin-vue']);
+      await execa('npm', ['install', '-D', 'eslint-config-airbnb-base']);
+    } catch (e) {
+      printErrorLog(e);
+    } finally {
+      spinner.stop();
+    }
+
     // 1.初始化eslint
+    const cwd = process.cwd()
+    log.verbose('cwd',cwd)
     const eslint = new ESLint({
       cwd,
       overrideConfig,
     })
+    log.info('正在执行eslint检查');
     // 2.执行eslint
     try {
       const results = await eslint.lintFiles(['./src/**/*.js', './src/**/*.vue'])
