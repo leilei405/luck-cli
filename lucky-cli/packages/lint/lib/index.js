@@ -1,6 +1,7 @@
 import pkg from 'eslint';
 import execaPkg from 'execa'
 import ora from 'ora';
+import jest from 'jest';
 import Command from "@lucky.com/command";
 import { log, printErrorLog } from "@lucky.com/utils";
 import overrideConfig from './eslint/vue-config.js';
