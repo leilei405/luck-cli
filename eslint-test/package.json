@@ -1,7 +1,7 @@
 {
   "name": "eslint-test",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "lint": "eslint"
   },
@@ -10,9 +10,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@eslint/js": "^9.17.0",
-    "eslint": "^9.17.0",
     "eslint-plugin-vue": "^9.32.0",
-    "globals": "^15.14.0"
+    "eslint-config-airbnb-base": "^15.0.0"
   }
 }

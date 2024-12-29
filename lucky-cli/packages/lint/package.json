@@ -27,6 +27,7 @@
   "dependencies": {
     "@lucky.com/command": "^0.0.0",
     "@lucky.com/utils": "^0.0.0",
-    "eslint": "^9.17.0"
+    "eslint": "^9.17.0",
+    "execa": "^9.5.2"
   }
 }
