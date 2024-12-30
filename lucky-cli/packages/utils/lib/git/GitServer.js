@@ -5,7 +5,8 @@ import fse from "fs-extra";
 import { execa } from 'execa'
 import { pathExistsSync } from "path-exists";
 import log from "../log.js";
-import { makePassword } from "../inquirer.js";
+import {makeList, makePassword} from "../inquirer.js";
+import {Gitee, GitHub} from "../index.js";
 
 const TEMP_HOME = ".lucky-cli";
 const TEMP_TOKEN = ".token_ssh";
@@ -45,6 +46,40 @@ function getPackageJson (cwd, fullName) {
   }
   return null
 }
+
+// 初始化git服务器
+async function initGitServer () {
+  let platform = getGitPlatform();
+  if (!platform) {
+    platform = await makeList({
+      message: "请选择仓库平台",
+      choices: [
+        {
+          name: "Github",
+          value: "github",
+        },
+        {
+          name: "Gitee",
+          value: "gitee",
+        },
+      ],
+    });
+  }
+  log.verbose("当前选择的Git平台", platform);
+
+  let gitAPI;
+  if (platform === "github") {
+    gitAPI = new GitHub();
+  } else {
+    gitAPI = new Gitee();
+  }
+
+  gitAPI.savePlatform(platform);
+  await gitAPI.init();
+  return gitAPI;
+}
+
+
 
 // 抽象git服务器
 class GitServer {
@@ -138,4 +173,4 @@ class GitServer {
 
 
 
-export { GitServer, getGitPlatform };
+export { GitServer, getGitPlatform, initGitServer };

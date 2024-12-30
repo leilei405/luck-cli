@@ -1,0 +1,35 @@
+{
+  "name": "@lucky.com/commit",
+  "version": "1.0.0",
+  "description": "Git Flow 代码提交器",
+  "keywords": [
+    "Git",
+    "Flow"
+  ],
+  "author": "leilei405 <1601178425@qq.com>",
+  "homepage": "https://github.com/leilei405/luck-cli#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "type": "module",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leilei405/luck-cli.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/commit.test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/leilei405/luck-cli/issues"
+  },
+  "dependencies": {
+    "@lucky.com/command": "^0.0.0",
+    "@lucky.com/utils": "^0.0.0"
+  }
+}

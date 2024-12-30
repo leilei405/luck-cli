@@ -6,8 +6,9 @@ import {
   makeList,
   getGitPlatform,
   Gitee,
-  makeInput, printErrorLog,
-
+  makeInput,
+  printErrorLog,
+  initGitServer
 } from "@lucky.com/utils";
 
 const PREV_PAGE = "prev_page"; // 上一页
@@ -71,34 +72,7 @@ class InstallCommand extends Command {
 
   // 生成GitApi
   async generateGitApi() {
-    let platform = getGitPlatform();
-    if (!platform) {
-      platform = await makeList({
-        message: "请选择仓库平台",
-        choices: [
-          {
-            name: "Github",
-            value: "github",
-          },
-          {
-            name: "Gitee",
-            value: "gitee",
-          },
-        ],
-      });
-    }
-    log.verbose("当前选择的Git平台", platform);
-
-    let gitAPI;
-    if (platform === "github") {
-      gitAPI = new GitHub();
-    } else {
-      gitAPI = new Gitee();
-    }
-
-    gitAPI.savePlatform(platform);
-    await gitAPI.init();
-    this.gitAPI = gitAPI;
+    this.gitAPI = await initGitServer();
   }
 
   // 搜索模式 & 关键字 & 编程语言
