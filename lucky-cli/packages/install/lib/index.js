@@ -1,15 +1,6 @@
 import ora from 'ora'
 import Command from "@lucky.com/command";
-import {
-  log,
-  GitHub,
-  makeList,
-  getGitPlatform,
-  Gitee,
-  makeInput,
-  printErrorLog,
-  initGitServer
-} from "@lucky.com/utils";
+import { log, makeList, makeInput, printErrorLog, initGitServer } from "@lucky.com/utils";
 
 const PREV_PAGE = "prev_page"; // 上一页
 const NEXT_PAGE = "next_page"; // 下一页
@@ -35,7 +26,7 @@ class InstallCommand extends Command {
     log.verbose('keyword', this.keyword)
     log.verbose('selectTag', this.selectedTag)
     await this.installDependencies();
-    // await this.runRepo();
+    await this.runRepo();
   }
 
   // 下载指定版本

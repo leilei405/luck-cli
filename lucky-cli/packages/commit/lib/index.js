@@ -28,7 +28,6 @@ class CommitCommand extends Command {
    */
   async createRemoteRepo () {
     this.git = await initGitServer()
-
     console.log(this.git.platform, 'git')
   }
 

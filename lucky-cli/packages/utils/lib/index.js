@@ -5,7 +5,8 @@ import { getLatestVersion } from "./npm.js";
 import request from "./request.js";
 import GitHub from "./git/GitHub.js";
 import Gitee from "./git/Gitee.js";
-import { getGitPlatform, initGitServer } from "./git/gitServer.js";
+import { initGitServer } from './git/GitUtils.js'
+import { getGitPlatform } from "./git/gitServer.js";
 
 function printErrorLog(err, errorType) {
   if (isDebug()) {
