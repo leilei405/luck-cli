@@ -28,6 +28,7 @@
     "url": "https://github.com/leilei405/luck-cli/issues"
   },
   "dependencies": {
+    "@lucky.com/commit": "^1.0.0",
     "@lucky.com/init": "^0.0.0",
     "@lucky.com/install": "^0.0.0",
     "@lucky.com/lint": "^1.0.0",
