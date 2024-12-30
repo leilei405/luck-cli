@@ -46,6 +46,16 @@ function getPackageJson (cwd, fullName) {
   return null
 }
 
+// 清除缓存
+function clearCache() {
+  const temp = path.resolve(homedir(), TEMP_HOME);
+  const platform = path.resolve(temp, TEMP_PLATFORM);
+  const token = path.resolve(temp, TEMP_TOKEN);
+  fse.removeSync(temp);
+  fse.removeSync(platform);
+  fse.removeSync(token);
+}
+
 // 抽象git服务器
 class GitServer {
   constructor() {}
@@ -147,4 +157,4 @@ class GitServer {
 
 
 
-export { GitServer, getGitPlatform };
+export { GitServer, getGitPlatform, clearCache };

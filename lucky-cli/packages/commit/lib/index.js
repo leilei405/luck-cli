@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs'
 import { homedir } from 'node:os'
 import Command from "@lucky.com/command";
-import { log, initGitServer, initGitUserType } from "@lucky.com/utils";
+import { log, initGitServer, initGitUserType, clearCache } from "@lucky.com/utils";
 
 const CACHE_DIR = '.lucky-cli';
 const FILE_GIT_PLATFORM = '.git_platform';
@@ -16,9 +16,17 @@ class CommitCommand extends Command {
     return "commit description ";
   }
 
-  get options() {}
+  get options() {
+    return [
+        ['-c, --clear', '清空缓存', false],
+    ];
+  }
 
-  async action() {
+  async action([{ clear }]) {
+    // clear 清除缓存
+    if (clear) {
+      clearCache()
+    }
     await this.createRemoteRepo();
   }
 

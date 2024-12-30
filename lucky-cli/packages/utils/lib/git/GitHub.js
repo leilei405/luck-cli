@@ -66,6 +66,7 @@ class GitHub extends GitServer {
   getOrg() {
     return this.get("/user/orgs")
   }
+
 }
 
 export default GitHub;
