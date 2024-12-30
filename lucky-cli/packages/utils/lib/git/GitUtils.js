@@ -37,31 +37,77 @@ export async function initGitServer () {
 }
 
 
-// 初始化git用户 两种类型 1. 个人 2. 组织
+// 初始化git用户信息
 export  async function initGitUserType (gitAPI) {
+  // 获取用户信息
   const user = await gitAPI.getUser();
+  // 获取组织信息
   const org = await gitAPI.getOrg();
-  log.verbose('user', user)
-  log.verbose('org', org)
+  log.verbose("用户信息", user);
+  log.verbose("组织信息", org);
 
-  // const { platform, token } = gitAPI || {};
-  // if (!platform || !token) {
-  //   log.error("请先初始化Git服务器");
-  //   return;
-  // }
+  const { platform, token } = gitAPI || {};
+  if (!platform || !token) {
+    log.error("请先初始化Git服务器");
+    return;
+  }
 
-  // const userType = await makeList({
-  //   message: "请选择用户类型",
-  //   choices: [
-  //     {
-  //       name: "个人",
-  //       value: "personal",
-  //     },
-  //     {
-  //       name: "组织",
-  //       value: "organization",
-  //     },
-  //   ],
-  // });
+  // 仓库类型
+  let gitRegistryType;
+  // 登录名
+  let gitLogin;
+  // 选择仓库类型
+  if (!gitRegistryType) {
+    gitRegistryType = await makeList({
+      message: "请选择仓库类型",
+      choices: [
+        {
+          name: "User",
+          value: "user",
+        },
+        {
+          name: "Organization",
+          value: "org",
+        },
+      ],
+    });
+  }
+  log.verbose("选择的Git仓库类型", gitRegistryType === 'user' ? '个人' : '组织');
+
+  // 个人
+  if (gitRegistryType === 'user') {
+    if (!user.login) {
+      gitLogin = await makeList({
+        message: "请选择登录名",
+        choices: [
+          {
+            name: user.login,
+            value: user.login,
+          },
+        ],
+      });
+    } else {
+      gitLogin = user.login;
+    }
+  }
+
+  // 组织
+  if (gitRegistryType === 'org') {
+    const orgList = org.map(item => ({
+      name: item.name || item.login,
+      value: item.login,
+    }));
+
+    if (!orgList.length) {
+      throw new Error('未获取到用户的组织信息或者请加入一个组织！亦或者请使用"lucky-cli commit --clear"清除缓存后重试');
+    }
+    console.log(orgList)
+    gitLogin = await makeList({
+      message: '请选择组织',
+      choices: orgList,
+    });
+  }
+  log.verbose("选择的Git登录名", gitLogin);
+
 }
 
