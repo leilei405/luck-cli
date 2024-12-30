@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs'
 import { homedir } from 'node:os'
 import Command from "@lucky.com/command";
-import { log, getGitPlatform, initGitServer } from "@lucky.com/utils";
+import { log, initGitServer, initGitUserType } from "@lucky.com/utils";
 
 const CACHE_DIR = '.lucky-cli';
 const FILE_GIT_PLATFORM = '.git_platform';
@@ -27,10 +27,12 @@ class CommitCommand extends Command {
    *
    */
   async createRemoteRepo () {
-    this.git = await initGitServer()
-    console.log(this.git.platform, 'git')
-  }
+    // 1-1. 实例化git对象
+    this.gitAPI = await initGitServer();
 
+    // 1-2. 仓库类型的选择
+    await initGitUserType(this.gitAPI);
+  }
 
 
   /**
@@ -40,25 +42,20 @@ class CommitCommand extends Command {
   async initLocal () {}
 
 
-
-
-
   /**
    *  @description 3. 代码自动化提交
    *
    */
-  async commit () {
-
-  }
+  async commit () {}
 
 
   /**
    *  @description 4. 代码发布
    *
    */
-  async publish () {
+  async publish () {}
 
-  }
+
 }
 
 function Commit(instance) {

@@ -48,12 +48,29 @@ class Gitee extends GitServer {
     });
   }
 
+  // 搜索仓库
   searchRepositories(params) {
     return this.get("/search/repositories", params);
   }
 
+  // 搜索源码
+  searchCode(params) {
+    return this.get("/search/code", params);
+  }
+
+  // 获取仓库的tags
   getTags(fullName) {
     return this.get("/repos/" + fullName + "/tags");
+  }
+
+  // 获取用户授权信息
+  getUser() {
+    return this.get("/user");
+  }
+
+  //
+  getOrg() {
+    return this.get("/user/orgs")
   }
 }
 

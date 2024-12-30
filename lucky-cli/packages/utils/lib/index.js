@@ -5,7 +5,7 @@ import { getLatestVersion } from "./npm.js";
 import request from "./request.js";
 import GitHub from "./git/GitHub.js";
 import Gitee from "./git/Gitee.js";
-import { initGitServer } from './git/GitUtils.js'
+import { initGitServer, initGitUserType } from './git/GitUtils.js'
 import { getGitPlatform } from "./git/gitServer.js";
 
 function printErrorLog(err, errorType) {
@@ -28,5 +28,6 @@ export {
   GitHub,
   getGitPlatform,
   Gitee,
-  initGitServer
+  initGitServer,
+  initGitUserType
 };

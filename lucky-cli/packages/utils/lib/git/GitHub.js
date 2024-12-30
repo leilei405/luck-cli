@@ -56,6 +56,16 @@ class GitHub extends GitServer {
   getTags(fullName, params) {
     return this.get("/repos/" + fullName + "/tags", params);
   }
+
+  // 获取用户授权信息
+  getUser() {
+    return this.get("/user");
+  }
+
+  //
+  getOrg() {
+    return this.get("/user/orgs")
+  }
 }
 
 export default GitHub;

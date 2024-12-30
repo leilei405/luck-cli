@@ -37,3 +37,31 @@ export async function initGitServer () {
 }
 
 
+// 初始化git用户 两种类型 1. 个人 2. 组织
+export  async function initGitUserType (gitAPI) {
+  const user = await gitAPI.getUser();
+  const org = await gitAPI.getOrg();
+  log.verbose('user', user)
+  log.verbose('org', org)
+
+  // const { platform, token } = gitAPI || {};
+  // if (!platform || !token) {
+  //   log.error("请先初始化Git服务器");
+  //   return;
+  // }
+
+  // const userType = await makeList({
+  //   message: "请选择用户类型",
+  //   choices: [
+  //     {
+  //       name: "个人",
+  //       value: "personal",
+  //     },
+  //     {
+  //       name: "组织",
+  //       value: "organization",
+  //     },
+  //   ],
+  // });
+}
+
