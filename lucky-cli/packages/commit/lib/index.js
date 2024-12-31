@@ -1,10 +1,13 @@
 import path from 'node:path'
 import fse from 'fs-extra'
+import fs from 'fs'
 import Command from "@lucky.com/command";
 import { log, initGitServer, initGitUserType, clearCache, createRemoteRepo } from "@lucky.com/utils";
 
 const CACHE_DIR = '.lucky-cli';
 const FILE_GIT_PLATFORM = '.git_platform';
+const PACKAGE_JSON = 'package.json';
+const FILE_GITIGNORE = '.gitignore';
 
 class CommitCommand extends Command {
   get command() {
@@ -44,8 +47,37 @@ class CommitCommand extends Command {
     // 获取项目名称
     const dir = process.cwd()
     // 读取当前项目下package.json 的name做为仓库名称
-    const pkg = fse.readJsonSync(path.resolve(dir, 'package.json'))
+    const pkg = fse.readJsonSync(path.resolve(dir, PACKAGE_JSON))
     await createRemoteRepo(this.gitAPI, pkg.name)
+
+    // 1-4. 生成.gitignore
+    const fileGitignorePath = path.resolve(dir, FILE_GITIGNORE);
+    if (!fs.existsSync(fileGitignorePath)) {
+      log.info('.gitignore不存在，开始创建');
+      fs.writeFileSync(fileGitignorePath, `.DS_Store
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?`);
+      log.success('.gitignore创建成功');
+    }
   }
 
 
