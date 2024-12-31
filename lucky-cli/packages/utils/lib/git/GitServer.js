@@ -205,6 +205,11 @@ class GitServer {
     throw new Error('getOrg must be implemented');
   }
 
+  // 创建仓库
+  createRepo () {
+    console.log('createRepo must be implemented')
+  }
+
 }
 
 

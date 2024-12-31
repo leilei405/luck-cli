@@ -40,7 +40,6 @@ class Gitee extends GitServer {
       url,
       data,
       params: {
-        ...data,
         access_token: this.token,
       },
       method: "post",
@@ -68,10 +67,21 @@ class Gitee extends GitServer {
     return this.get("/user");
   }
 
-  //
+  // 获取组织信息
   getOrg() {
     return this.get("/user/orgs")
   }
+
+  // 创建仓库
+  async createRepo(name) {
+    if (this.registryType === 'user') {
+      return this.post("/user/repos", { name });
+    }
+    if (this.registryType === 'org') {
+      return this.post(`/orgs/${this.login}/repos`, { name });
+    }
+  }
+
 }
 
 export default Gitee;

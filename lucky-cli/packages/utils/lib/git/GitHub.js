@@ -38,8 +38,16 @@ class GitHub extends GitServer {
     return this.service({ url, params, method: "get", headers });
   }
 
-  post(url, params) {
-    return this.service({ url, params, method: "post" });
+  post(url, data, headers) {
+    return this.service({
+      url,
+      data,
+      params: {
+        access_token: this.token,
+      },
+      method: "post",
+      headers
+    });
   }
 
   // 搜索仓库
@@ -62,9 +70,23 @@ class GitHub extends GitServer {
     return this.get("/user");
   }
 
-  //
+  // 获取组织信息
   getOrg() {
     return this.get("/user/orgs")
+  }
+
+  // 创建仓库
+  createRepo(name) {
+    console.log("registryType", this.registryType, 'name', name)
+    if (this.registryType === 'user') {
+      return this.post("/user/repos", { name }, {
+        accept: "application/vnd.github+json",
+      });
+    } else {
+      return this.post(`/orgs/${this.login}/repos`, { name }, {
+        accept: "application/vnd.github+json",
+      });
+    }
   }
 
 }

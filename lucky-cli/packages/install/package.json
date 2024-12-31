@@ -7,8 +7,7 @@
   "license": "ISC",
   "main": "lib/index.js",
   "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+    "lib": "lib"
   },
   "type": "module",
   "files": [
@@ -28,5 +27,6 @@
     "@lucky.com/command": "^0.0.0",
     "@lucky.com/utils": "^0.0.0",
     "ora": "^8.1.1"
-  }
+  },
+  "keywords": []
 }

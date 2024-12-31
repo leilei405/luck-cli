@@ -5,7 +5,7 @@ import { getLatestVersion } from "./npm.js";
 import request from "./request.js";
 import GitHub from "./git/GitHub.js";
 import Gitee from "./git/Gitee.js";
-import { initGitServer, initGitUserType } from './git/GitUtils.js'
+import { initGitServer, initGitUserType, createRemoteRepo } from './git/GitUtils.js'
 import { getGitPlatform, clearCache, getGitRegistryType, getGitLogin } from "./git/gitServer.js";
 
 function printErrorLog(err, errorType) {
@@ -33,4 +33,5 @@ export {
   clearCache,
   getGitRegistryType,
   getGitLogin,
+  createRemoteRepo
 };
