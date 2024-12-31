@@ -1,6 +1,7 @@
-import path from 'node:path'
-import fse from 'fs-extra'
-import fs from 'fs'
+import path from 'node:path';
+import fse from 'fs-extra';
+import fs from 'fs';
+import SimpleGit from 'simple-git';
 import Command from "@lucky.com/command";
 import { log, initGitServer, initGitUserType, clearCache, createRemoteRepo } from "@lucky.com/utils";
 
@@ -94,8 +95,26 @@ pnpm-debug.log*
    *
    */
   async initLocal () {
-    console.log('Git本地初始化')
+    log.verbose('开始 Git 本地初始化....')
+    // 2-1. 生成 gitRemote 地址
     const remoteRepoUrl = this.gitAPI.getRepoUrl(`${this.gitAPI.login}/${this.name}`)
+
+    // 2-2. 初始化 git 对象
+    this.git = SimpleGit(process.cwd());
+
+    // 2-3. git 本地初始化
+    this.git.init();
+    log.success('完成 Git 本地初始化');
+
+    // 2-4. 获取所有的 remote
+    const remotes = await this.git.getRemotes();
+
+    // 2-5. 判断是否已经有 remote
+    if (!remotes.find((item) => item.name === 'origin')) {
+      log.success('正在进行 remote 初始化');
+      await this.git.addRemote('origin', remoteRepoUrl);
+      log.success('Git本地初始化完成', JSON.stringify(remotes));
+    }
 
   }
 
