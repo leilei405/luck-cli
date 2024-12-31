@@ -123,12 +123,12 @@ pnpm-debug.log*
     // 2-6. 获取当前未提交的文件
     const status = await this.git.status();
 
-    // 2-7. 拉取远程分支的代码
+    // 2-7. 拉取远程分支的代码 实现代码同步
     try {
       await this.git.pull('origin', 'master')
       log.success('拉取远程分支的代码成功');
-    } catch (e) {
-      log.warn('拉取远程分支的代码失败');
+    } catch (err) {
+      log.warn('拉取远程分支的代码失败', err);
     }
 
 
