@@ -3,7 +3,7 @@ import fse from 'fs-extra';
 import fs from 'fs';
 import SimpleGit from 'simple-git';
 import Command from "@lucky.com/command";
-import { log, initGitServer, initGitUserType, clearCache, createRemoteRepo } from "@lucky.com/utils";
+import { log, initGitServer, initGitUserType, clearCache, createRemoteRepo, makeInput } from "@lucky.com/utils";
 
 const CACHE_DIR = '.lucky-cli';
 const FILE_GIT_PLATFORM = '.git_platform';
@@ -120,20 +120,58 @@ pnpm-debug.log*
       log.success('添加 Git Remote', remoteRepoUrl);
     }
 
-    // 2-6. 获取当前未提交的文件
-    const status = await this.git.status();
+    // 检查是否有未提交的代码
+    await this.checkCommitCode();
 
-    // 2-7. 拉取远程分支的代码 实现代码同步
-    try {
-      await this.git.pull('origin', 'master')
-      log.success('拉取远程分支的代码成功');
-    } catch (err) {
-      log.warn('拉取远程分支的代码失败', err);
+    // 2-6. 检查是否存在远程 master 分支
+    const tags = await this.git.listRemote(['--refs']);
+    log.verbose('远程分支', tags);
+    if (tags.includes('refs/heads/master')) {
+      // 2-6-1. 拉取远程分支的代码 实现代码同步
+      try {
+        await this.git.pull('origin', 'master')
+        log.success('拉取远程分支的代码成功');
+      } catch (err) {
+        log.warn('拉取远程分支的代码失败');
+      }
+    } else {
+      await this.pushRemoteRepo('master');
     }
-
-
   }
 
+  // 推送到远程 master 分支
+  async pushRemoteRepo (branchName) {
+    log.info(`推送代码到远程 ${branchName} 分支`);
+    await this.git.push('origin', branchName);
+  }
+
+  // 未提交代码提交
+  async checkCommitCode () {
+    const status = await this.git.status();
+    if (
+        status.not_added.length > 0 ||
+        status.modified.length > 0 ||
+        status.created.length > 0 ||
+        status.deleted.length > 0 ||
+        status.renamed.length > 0
+      )
+    {
+      log.verbose('当前有未提交的代码', JSON.stringify(status));
+      await this.git.add(status.not_added);
+      await this.git.add(status.modified);
+      await this.git.add(status.created);
+      await this.git.add(status.deleted);
+      await this.git.add(status.renamed);
+      let message = '';
+      while (!message) {
+        message = await makeInput({
+          message: '请输入 Commit 信息',
+        });
+      }
+      await this.git.commit(message);
+      log.success('本地代码提交成功');
+    }
+  }
 
   /**
    *  @description 3. 代码自动化提交
