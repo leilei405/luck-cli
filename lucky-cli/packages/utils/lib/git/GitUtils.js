@@ -2,7 +2,7 @@ import { makeList } from '../inquirer.js';
 import log from '../log.js';
 import GitHub from './GitHub.js';
 import Gitee from './Gitee.js';
-import { getGitPlatform } from './GitServer.js';
+import { getGitPlatform, getGitRegistryType, getGitLogin } from './GitServer.js';
 
 // 初始化git服务器
 export async function initGitServer () {
@@ -39,23 +39,19 @@ export async function initGitServer () {
 
 // 初始化git用户信息
 export  async function initGitUserType (gitAPI) {
-  // 获取用户信息
-  const user = await gitAPI.getUser();
-  // 获取组织信息
-  const org = await gitAPI.getOrg();
+  let gitRegistryType = getGitRegistryType(); // 仓库类型
+  let gitLogin = getGitLogin(); // 登录名
+  const user = await gitAPI.getUser(); // 获取用户信息
+  const org = await gitAPI.getOrg(); // 获取组织信息
+
   log.verbose("用户信息", user);
   log.verbose("组织信息", org);
-
   const { platform, token } = gitAPI || {};
   if (!platform || !token) {
     log.error("请先初始化Git服务器");
     return;
   }
 
-  // 仓库类型
-  let gitRegistryType;
-  // 登录名
-  let gitLogin;
   // 选择仓库类型
   if (!gitRegistryType) {
     gitRegistryType = await makeList({
@@ -72,7 +68,6 @@ export  async function initGitUserType (gitAPI) {
       ],
     });
   }
-  log.verbose("选择的Git仓库类型", gitRegistryType === 'user' ? '个人' : '组织');
 
   // 个人
   if (gitRegistryType === 'user') {
@@ -98,16 +93,24 @@ export  async function initGitUserType (gitAPI) {
       value: item.login,
     }));
 
-    if (!orgList.length) {
-      throw new Error('未获取到用户的组织信息或者请加入一个组织！亦或者请使用"lucky-cli commit --clear"清除缓存后重试');
-    }
     console.log(orgList)
     gitLogin = await makeList({
       message: '请选择组织',
       choices: orgList,
     });
   }
-  log.verbose("选择的Git登录名", gitLogin);
+
+  if (!gitRegistryType || !gitLogin) {
+    throw new Error('未获取到用户或组织信息或者请加入一个组织！亦或者 请使用"lucky-cli commit --clear"清除缓存后重试');
+  }
+
+  log.verbose("选择的Git仓库类型", gitRegistryType);
+  log.verbose("当前选择的Git登录名", gitLogin);
+
+  gitAPI.saveGitRegistryType(gitRegistryType);
+  gitAPI.saveGitLogin(gitLogin);
+
+  return gitLogin;
 
 }
 

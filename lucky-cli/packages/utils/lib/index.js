@@ -6,7 +6,7 @@ import request from "./request.js";
 import GitHub from "./git/GitHub.js";
 import Gitee from "./git/Gitee.js";
 import { initGitServer, initGitUserType } from './git/GitUtils.js'
-import { getGitPlatform, clearCache } from "./git/gitServer.js";
+import { getGitPlatform, clearCache, getGitRegistryType, getGitLogin } from "./git/gitServer.js";
 
 function printErrorLog(err, errorType) {
   if (isDebug()) {
@@ -30,5 +30,7 @@ export {
   Gitee,
   initGitServer,
   initGitUserType,
-  clearCache
+  clearCache,
+  getGitRegistryType,
+  getGitLogin,
 };

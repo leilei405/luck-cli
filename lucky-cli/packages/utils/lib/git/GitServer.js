@@ -7,9 +7,11 @@ import { pathExistsSync } from "path-exists";
 import { makePassword } from "../inquirer.js";
 import log from "../log.js";
 
-const TEMP_HOME = ".lucky-cli";
-const TEMP_TOKEN = ".token_ssh";
-const TEMP_PLATFORM = ".git_platform";
+const TEMP_HOME = ".lucky-cli"; // 临时目录
+const TEMP_TOKEN = ".token_ssh"; // token路径
+const TEMP_PLATFORM = ".git_platform"; // 平台路径
+const TEMP_GIT_REGISTRY_TYPE = ".git_registry_type"; // 仓库类型
+const TEMP_GIT_LOGIN = ".git_login"; // 登录名
 
 // 获取token路径
 function createTokenPath() {
@@ -48,12 +50,40 @@ function getPackageJson (cwd, fullName) {
 
 // 清除缓存
 function clearCache() {
-  const temp = path.resolve(homedir(), TEMP_HOME);
-  const platform = path.resolve(temp, TEMP_PLATFORM);
-  const token = path.resolve(temp, TEMP_TOKEN);
-  fse.removeSync(temp);
+  const platform = createPlatformPath();
+  const token =createTokenPath();
+  const gitRegistryType = createGitRegistryPath();
+  const gitLogin = createGitLoginPath();
   fse.removeSync(platform);
   fse.removeSync(token);
+  fse.removeSync(gitRegistryType);
+  fse.removeSync(gitLogin);
+}
+
+// 创建仓库类型路径
+function createGitRegistryPath() {
+  return path.resolve(homedir(), TEMP_HOME, TEMP_GIT_REGISTRY_TYPE);
+}
+
+// 获取仓库类型
+function getGitRegistryType () {
+  if (pathExistsSync(createGitRegistryPath())) {
+    return fs.readFileSync(createGitRegistryPath()).toString();
+  }
+  return null;
+}
+
+// 创建登录名路径
+function createGitLoginPath() {
+  return path.resolve(homedir(), TEMP_HOME, TEMP_GIT_LOGIN);
+}
+
+// 获取登录名
+function getGitLogin () {
+  if (pathExistsSync(createGitLoginPath())) {
+    return fs.readFileSync(createGitLoginPath()).toString();
+  }
+  return null;
 }
 
 // 抽象git服务器
@@ -88,6 +118,28 @@ class GitServer {
   // 获取平台
   getPlatform() {
     return this.platform;
+  }
+
+  // 保存仓库类型
+  saveGitRegistryType(registryType) {
+    this.registryType = registryType;
+    fs.writeFileSync(createGitRegistryPath(), registryType);
+  }
+
+  // 获取仓库类型
+  getGitRegistryType () {
+    return this.registryType;
+  }
+
+  // 保存登录名
+  saveGitLogin(login) {
+    this.login = login;
+    fs.writeFileSync(createGitLoginPath(), login);
+  }
+
+  // 获取登录名
+  getGitLogin () {
+    return this.login;
   }
 
   // 获取token
@@ -157,4 +209,4 @@ class GitServer {
 
 
 
-export { GitServer, getGitPlatform, clearCache };
+export { GitServer, getGitPlatform, clearCache, getGitRegistryType, getGitLogin  };
