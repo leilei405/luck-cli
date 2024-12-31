@@ -29,7 +29,14 @@ class CommitCommand extends Command {
     if (clear) {
       clearCache()
     }
+    // 1. 创建远程仓库
     await this.createRemoteRepo();
+    // 2. Git本地初始化
+    await this.initLocal();
+    // 3. 代码自动化提交
+    await this.commit();
+    // 4. 代码发布
+    await this.publish();
   }
 
   /**
@@ -48,7 +55,8 @@ class CommitCommand extends Command {
     const dir = process.cwd()
     // 读取当前项目下package.json 的name做为仓库名称
     const pkg = fse.readJsonSync(path.resolve(dir, PACKAGE_JSON))
-    await createRemoteRepo(this.gitAPI, pkg.name)
+    this.name = pkg.name; // 仓库名称 因为要生成远程仓库的名称，所以需要读取package.json的name
+    await createRemoteRepo(this.gitAPI, this.name)
 
     // 1-4. 生成.gitignore
     const fileGitignorePath = path.resolve(dir, FILE_GITIGNORE);
@@ -85,22 +93,29 @@ pnpm-debug.log*
    *  @description 2. Git本地初始化
    *
    */
-  async initLocal () {}
+  async initLocal () {
+    console.log('Git本地初始化')
+    const remoteRepoUrl = this.gitAPI.getRepoUrl(`${this.gitAPI.login}/${this.name}`)
+
+  }
 
 
   /**
    *  @description 3. 代码自动化提交
    *
    */
-  async commit () {}
+  async commit () {
+    console.log('代码自动化提交')
+  }
 
 
   /**
    *  @description 4. 代码发布
    *
    */
-  async publish () {}
-
+  async publish () {
+    console.log('代码发布')
+  }
 
 }
 
