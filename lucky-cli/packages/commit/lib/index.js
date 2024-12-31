@@ -101,10 +101,14 @@ pnpm-debug.log*
 
     // 2-2. 初始化 git 对象
     this.git = SimpleGit(process.cwd());
+    // 2-2.1 判断当前项目是否进行 Git 初始化
+    const gitDir = path.resolve(process.cwd(), '.git');
 
-    // 2-3. git 本地初始化
-    this.git.init();
-    log.success('完成 Git 本地初始化');
+    // 2-3. 不存在 .git 则进行本地初始化
+    if (!fs.existsSync(gitDir)) {
+      this.git.init();
+      log.success('完成 Git 本地初始化');
+    }
 
     // 2-4. 获取所有的 remote
     const remotes = await this.git.getRemotes();
@@ -113,8 +117,20 @@ pnpm-debug.log*
     if (!remotes.find((item) => item.name === 'origin')) {
       log.success('正在进行 remote 初始化');
       await this.git.addRemote('origin', remoteRepoUrl);
-      log.success('Git本地初始化完成', JSON.stringify(remotes));
+      log.success('添加 Git Remote', remoteRepoUrl);
     }
+
+    // 2-6. 获取当前未提交的文件
+    const status = await this.git.status();
+
+    // 2-7. 拉取远程分支的代码
+    try {
+      await this.git.pull('origin', 'master')
+      log.success('拉取远程分支的代码成功');
+    } catch (e) {
+      log.warn('拉取远程分支的代码失败');
+    }
+
 
   }
 
