@@ -1,5 +1,7 @@
 import axios from "axios";
+import ora from "ora";
 import { GitServer } from "./gitServer.js";
+import log from "../log.js";
 
 const BASE_URL = "https://api.github.com";
 
@@ -70,22 +72,55 @@ class GitHub extends GitServer {
     return this.get("/user");
   }
 
+  // 获取github某个仓库信息
+  getRepo(owner, repo) {
+    return this.get(
+    `/repos/${owner}/${repo}`,
+    {
+        accept: "application/vnd.github+json",
+    })
+    .catch((err) => {
+      if (err.response.status === 404) {
+        return null;
+      }
+      throw err;
+    });
+  }
+
+
   // 获取组织信息
   getOrg() {
     return this.get("/user/orgs")
   }
 
   // 创建仓库
-  createRepo(name) {
-    console.log("registryType", this.registryType, 'name', name)
+  async createRepo(name) {
+    // 创建前检查仓库是否存在 存在的话直接跳过创建
+    const repoInfo = await this.getRepo(this.login, name)
+
+    // 仓库存在直接返回仓库信息
+    if (repoInfo) {
+      log.info('仓库已存在, 不需要进行创建')
+      return repoInfo;
+    }
+
+    // 否则直接创建仓库
+    const spinner = ora('正在创建仓库...').start();
     if (this.registryType === 'user') {
-      return this.post("/user/repos", { name }, {
+      this.post("/user/repos", { name }, {
         accept: "application/vnd.github+json",
       });
-    } else {
-      return this.post(`/orgs/${this.login}/repos`, { name }, {
+      spinner.succeed('创建个人仓库完成');
+      spinner.stop();
+      return;
+    }
+
+    if (this.registryType === 'org') {
+      this.post(`/orgs/${this.login}/repos`, { name }, {
         accept: "application/vnd.github+json",
       });
+      spinner.succeed('创建组织仓库完成');
+      spinner.stop();
     }
   }
 

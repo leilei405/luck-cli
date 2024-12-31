@@ -105,6 +105,5 @@ export  async function initGitUserType (gitAPI) {
 
 // 创建远程仓库
 export async function createRemoteRepo (gitAPI, registryName) {
-  const res = await gitAPI.createRepo(registryName)
-  console.log(res, 'res')
+  await gitAPI.createRepo(registryName)
 }
