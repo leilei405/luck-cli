@@ -281,7 +281,7 @@ pnpm-debug.log*
     const devVersion = this.version;
     if (!releaseVersion) {
       this.branch = `dev/${devVersion}`
-    } else if (semver.gte(devVersion, releaseVersion))  {
+    } else if (semver.gt(devVersion, releaseVersion))  {
       log.info('当前本地版本大于线上远程版本', `${devVersion} >= ${releaseVersion}`);
       this.branch = `dev/${devVersion}`
     } else {
