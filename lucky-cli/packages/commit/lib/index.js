@@ -102,7 +102,6 @@ pnpm-debug.log*
     }
   }
 
-
   /**
    *  @description 2. Git本地初始化
    *
@@ -156,7 +155,6 @@ pnpm-debug.log*
     await this.git.push('origin', branchName);
   }
 
-
   // 未提交代码提交
   async checkCommitCode () {
     const status = await this.git.status();
@@ -185,7 +183,6 @@ pnpm-debug.log*
     }
   }
 
-
   /**
    *  @description 3. 代码自动化提交
    *
@@ -197,19 +194,36 @@ pnpm-debug.log*
     await this.checkGitStash();
     // 3-3. 代码冲突检查
     await this.checkGitConflict();
+    // 3-4. 自动提交未提交代码提交
+    await this.checkCommitCode();
+    // 3-5. 切换分支
+    await this.checkoutGitBranch(this.branch);
+  }
+
+  // 切换分支
+  async checkoutGitBranch (branchName) {
+    const branchList = await this.git.branchLocal();
+    log.info('本地分支列表', JSON.stringify(branchList.all))
+    if (branchList.all.includes(branchName)) {
+      await this.git.checkout(branchName);
+      log.success('切换分支成功');
+    } else {
+      await this.git.checkoutLocalBranch(branchName);
+      log.success('创建分支成功');
+    }
+    log.success(`本地分支切换成功${branchName}`);
   }
 
   // 代码冲突检查
-  async checkGitConflict () {
+  async checkGitConflict (branchName) {
     log.info('代码冲突检查');
     const status = await this.git.status();
-    if (status.conflicted.length >=  0) {
+    if (status.conflicted.length >  0) {
       log.warn('代码冲突, 请先手动去解决冲突');
       return;
     }
     log.success('代码冲突检查成功');
   }
-
 
   // 检查git stash 缓存区记录
   async checkGitStash () {
@@ -222,10 +236,10 @@ pnpm-debug.log*
   }
 
   // 获取正确的 版本号
-  async getCorrectVersion () {
+  async getCorrectVersion ()  {
     log.info('获取代码分支信息');
     const remoteBranchList = await this.getRemoteBranchList('release');
-    console.log('remoteBranchList', remoteBranchList);
+    log.info('远程分支列表', JSON.stringify(remoteBranchList));
     let releaseVersion;
     if (remoteBranchList && remoteBranchList.length > 0) {
       releaseVersion = remoteBranchList[0];
@@ -281,7 +295,6 @@ pnpm-debug.log*
     }
    }
 
-
   // 获取远程分支列表
   async getRemoteBranchList (branchName) {
     const remoteList = await this.git.listRemote(['--refs']);
@@ -310,7 +323,6 @@ pnpm-debug.log*
       return 1;
     })
   }
-
 
   /**
    *  @description 4. 代码发布
