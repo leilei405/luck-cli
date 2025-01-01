@@ -4,7 +4,15 @@ import fs from 'fs';
 import SimpleGit from 'simple-git';
 import semver, { inc } from 'semver';
 import Command from "@lucky.com/command";
-import { log, initGitServer, initGitUserType, clearCache, createRemoteRepo, makeInput } from "@lucky.com/utils";
+import {
+  log,
+  initGitServer,
+  initGitUserType,
+  clearCache,
+  createRemoteRepo,
+  makeInput,
+  makeList
+} from "@lucky.com/utils";
 
 const CACHE_DIR = '.lucky-cli';
 const FILE_GIT_PLATFORM = '.git_platform';
@@ -55,11 +63,14 @@ class CommitCommand extends Command {
 
     // 1-3. 创建远程仓库
     // 获取项目名称
-    const dir = process.cwd()
+    const dir = process.cwd();
     // 读取当前项目下package.json 的name做为仓库名称
-    const pkg = fse.readJsonSync(path.resolve(dir, PACKAGE_JSON))
-    this.name = pkg.name; // 仓库名称 因为要生成远程仓库的名称，所以需要读取package.json的name
-    await createRemoteRepo(this.gitAPI, this.name)
+    const pkg = fse.readJsonSync(path.resolve(dir, PACKAGE_JSON));
+    // 仓库名称 因为要生成远程仓库的名称，所以需要读取package.json的name
+    this.name = pkg.name;
+    // 仓库版本号
+    this.version = pkg.version || '1.0.0';
+    await createRemoteRepo(this.gitAPI, this.name);
 
     // 1-4. 生成.gitignore
     const fileGitignorePath = path.resolve(dir, FILE_GITIGNORE);
@@ -117,34 +128,35 @@ pnpm-debug.log*
 
     // 2-5. 判断是否已经有 remote
     if (!remotes.find((item) => item.name === 'origin')) {
-      log.success('正在进行 remote 初始化');
+      log.success('正在进行Git Remote初始化');
       await this.git.addRemote('origin', remoteRepoUrl);
-      log.success('添加 Git Remote', remoteRepoUrl);
-    }
+      log.success('添加Git Remote', remoteRepoUrl);
+      await this.checkCommitCode(); // 检查是否有未提交的代码
 
-    // 检查是否有未提交的代码
-    await this.checkCommitCode();
-
-    // 2-6. 检查是否存在远程 master 分支
-    const tags = await this.git.listRemote(['--refs']);
-    log.verbose('远程分支', tags);
-    if (tags.includes('refs/heads/master')) {
-      // 2-6-1. 拉取远程分支的代码 实现代码同步
-      try {
-        await this.git.pull('origin', 'master')
-        log.success('拉取远程分支的代码成功');
-      } catch (err) {
-        log.warn('拉取远程分支的代码失败');
+      // 2-6. 检查是否存在远程 master 分支
+      const tags = await this.git.listRemote(['--refs']);
+      log.verbose('远程分支', tags);
+      if (tags.includes('refs/heads/master')) {
+        // 2-6-1. 拉取远程分支的代码 实现代码同步
+        try {
+          await this.git.pull('origin', 'master')
+          log.success('拉取远程分支的代码成功');
+        } catch (err) {
+          log.warn('拉取远程分支的代码失败');
+        }
+      } else {
+        await this.pushRemoteRepo('master');
       }
-    } else {
-      await this.pushRemoteRepo('master');
     }
   }
+
   // 推送到远程 master 分支
   async pushRemoteRepo (branchName) {
     log.info(`推送代码到远程 ${branchName} 分支`);
     await this.git.push('origin', branchName);
   }
+
+
   // 未提交代码提交
   async checkCommitCode () {
     const status = await this.git.status();
@@ -188,7 +200,61 @@ pnpm-debug.log*
     log.info('获取代码分支信息');
     const remoteBranchList = await this.getRemoteBranchList('release');
     console.log('remoteBranchList', remoteBranchList);
+    let releaseVersion;
+    if (remoteBranchList && remoteBranchList.length > 0) {
+      releaseVersion = remoteBranchList[0];
+    }
+    const devVersion = this.version;
+    if (!releaseVersion) {
+      this.branch = `dev/${devVersion}`
+    } else if (semver.gte(devVersion, releaseVersion))  {
+      log.info('当前本地版本大于线上远程版本', `${devVersion} >= ${releaseVersion}`);
+      this.branch = `dev/${devVersion}`
+    } else {
+      log.info('当前线上版本大于本地版本', `${releaseVersion} >= ${devVersion}`);
+      const incType = await makeList({
+        message: '请选择版本号升级类型',
+        defaultValue: 'patch',
+         //   x 大版本号 y 小版本号  z 补丁号  ==>>>  1.0.0  1.1.0  1.0.1
+         //   major       minor    patch   ==>>>  1.0.0  1.1.0  1.0.1
+         choices: [
+           {
+             name: `补丁版本号 (${releaseVersion} --> ${semver.inc(releaseVersion, 'patch')})`,
+             value: 'patch',
+           },
+           {
+             name: `小版本号 (${releaseVersion} --> ${semver.inc(releaseVersion, 'minor')})`,
+             value: 'minor',
+           },
+           {
+             name: `大版本号 (${releaseVersion} --> ${semver.inc(releaseVersion, 'major')})`,
+             value: 'major',
+           },
+        ],
+      });
+
+      const incVersion = semver.inc(releaseVersion, incType);
+      this.branch = `dev/${incVersion}`;
+      this.version = incVersion;
+      this.syncVersionToPackageJson();
+
+    }
+    log.success('获取代码分支版本号成功', this.branch);
   }
+
+  // 将版本信息同步版本号到package.json
+  syncVersionToPackageJson () {
+    const dir = process.cwd();
+    const pkgPath = path.resolve(dir, PACKAGE_JSON);
+    const pkg = fse.readJsonSync(pkgPath);
+    if (pkg && pkg.version !== this.version) {
+      log.warn('package.json 中的版本号和当前版本号不一致, 开始同步');
+      pkg.version = this.version;
+      fse.writeJsonSync(pkgPath, pkg, { spaces: 2 });
+      log.success('同步成功');
+    }
+   }
+
 
   // 获取远程分支列表
   async getRemoteBranchList (branchName) {
@@ -210,15 +276,13 @@ pnpm-debug.log*
       }
 
     }).filter((item) => item)  // 过滤掉undefined
-        .sort((a, b) => { // tag版本号降序排序
-          if (semver.lte(b, a)) {
-            if (a === b) return 0;
-            return -1;
-          }
-          return 1;
-        })
-
-
+    .sort((a, b) => { // tag版本号降序排序
+      if (semver.lte(b, a)) {
+        if (a === b) return 0;
+        return -1;
+      }
+      return 1;
+    })
   }
 
 
