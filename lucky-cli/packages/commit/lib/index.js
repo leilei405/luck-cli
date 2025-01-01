@@ -193,9 +193,35 @@ pnpm-debug.log*
   async commit () {
     // 3-1. 自动生成版本号
     await this.getCorrectVersion();
+    // 3-2. 检查是否有未提交的代码
+    await this.checkGitStash();
+    // 3-3. 代码冲突检查
+    await this.checkGitConflict();
   }
 
-  // 获取正确的版本号
+  // 代码冲突检查
+  async checkGitConflict () {
+    log.info('代码冲突检查');
+    const status = await this.git.status();
+    if (status.conflicted.length >=  0) {
+      log.warn('代码冲突, 请先手动去解决冲突');
+      return;
+    }
+    log.success('代码冲突检查成功');
+  }
+
+
+  // 检查git stash 缓存区记录
+  async checkGitStash () {
+    const stashList = await this.git.stashList();
+    if (stashList && stashList.all.length > 0) {
+      log.info('当前有Git stash缓存区记录');
+      await this.git.stash(['pop']);
+      log.success('Git stash 缓存区记录恢复成功');
+    }
+  }
+
+  // 获取正确的 版本号
   async getCorrectVersion () {
     log.info('获取代码分支信息');
     const remoteBranchList = await this.getRemoteBranchList('release');
