@@ -32,6 +32,7 @@
     "@lucky.com/command": "^0.0.0",
     "@lucky.com/utils": "^0.0.0",
     "fs-extra": "^11.2.0",
+    "semver": "^7.6.3",
     "simple-git": "^3.27.0"
   }
 }

@@ -2,6 +2,7 @@ import path from 'node:path';
 import fse from 'fs-extra';
 import fs from 'fs';
 import SimpleGit from 'simple-git';
+import semver, { inc } from 'semver';
 import Command from "@lucky.com/command";
 import { log, initGitServer, initGitUserType, clearCache, createRemoteRepo, makeInput } from "@lucky.com/utils";
 
@@ -22,6 +23,7 @@ class CommitCommand extends Command {
   get options() {
     return [
         ['-c, --clear', '清空缓存', false],
+        ['-p, --publish', '发布', false],
     ];
   }
 
@@ -138,13 +140,11 @@ pnpm-debug.log*
       await this.pushRemoteRepo('master');
     }
   }
-
   // 推送到远程 master 分支
   async pushRemoteRepo (branchName) {
     log.info(`推送代码到远程 ${branchName} 分支`);
     await this.git.push('origin', branchName);
   }
-
   // 未提交代码提交
   async checkCommitCode () {
     const status = await this.git.status();
@@ -173,12 +173,52 @@ pnpm-debug.log*
     }
   }
 
+
   /**
    *  @description 3. 代码自动化提交
    *
    */
   async commit () {
-    console.log('代码自动化提交')
+    // 3-1. 自动生成版本号
+    await this.getCorrectVersion();
+  }
+
+  // 获取正确的版本号
+  async getCorrectVersion () {
+    log.info('获取代码分支信息');
+    const remoteBranchList = await this.getRemoteBranchList('release');
+    console.log('remoteBranchList', remoteBranchList);
+  }
+
+  // 获取远程分支列表
+  async getRemoteBranchList (branchName) {
+    const remoteList = await this.git.listRemote(['--refs']);
+    let reg;
+    if (branchName === 'release') {
+      // release/0.0.1
+      reg = /.+?refs\/tags\/release\/(\d+\.\d+\.\d+)/g;
+    } else {
+      // dev/0.0.1
+      reg = /.+?refs\/tags\/dev\/(\d+\.\d+\.\d+)/g;
+    }
+
+    return remoteList.split('\n').map((item) => {
+      const match = reg.exec(item);
+      reg.lastIndex = 0; // 重置正则表达式的 lastIndex 属性
+      if (match && semver.valid(match[1])) {
+        return match[1];
+      }
+
+    }).filter((item) => item)  // 过滤掉undefined
+        .sort((a, b) => { // tag版本号降序排序
+          if (semver.lte(b, a)) {
+            if (a === b) return 0;
+            return -1;
+          }
+          return 1;
+        })
+
+
   }
 
 
