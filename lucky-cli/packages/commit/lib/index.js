@@ -137,12 +137,7 @@ pnpm-debug.log*
       log.verbose('远程分支', tags);
       if (tags.includes('refs/heads/master')) {
         // 2-6-1. 拉取远程分支的代码 实现代码同步
-        try {
-          await this.git.pull('origin', 'master')
-          log.success('拉取远程分支的代码成功');
-        } catch (err) {
-          log.warn('拉取远程分支的代码失败');
-        }
+        await this.pullRemoteRepo('master');
       } else {
         await this.pushRemoteRepo('master');
       }
@@ -198,6 +193,35 @@ pnpm-debug.log*
     await this.checkCommitCode();
     // 3-5. 切换分支
     await this.checkoutGitBranch(this.branch);
+    // 3-6. 合并 & 推送代码到远程分支
+    await this.pullRemoteMasterAndBranch();
+  }
+
+  async pullRemoteMasterAndBranch () {
+    log.info(`合并【master】--->>>> ${this.branch} 分支`);
+    await this.pullRemoteRepo('master');
+    log.success('合并【master】分支成功');
+    log.info('检查远程分支');
+    const remoteBranchList = await this.getRemoteBranchList();
+    if (remoteBranchList.indexOf(this.version) >= 0) {
+      log.info(`合并 [${this.branch}] -> [${this.branch}]`);
+      await this.pullRemoteRepo(this.branch);
+      log.success(`合并远程 [${this.branch}] 分支成功`);
+      await this.checkGitConflict();
+    } else {
+      log.success(`不存在远程分支 [${this.branch}]`);
+    }
+  }
+
+  async pullRemoteRepo (branch) {
+    log.info(`同步远程 ${branch} 分支代码`);
+    try {
+      await this.git.pull('origin', 'master')
+      log.success('拉取远程分支的代码成功');
+    } catch (err) {
+      log.warn('拉取远程分支的代码失败, 可能不存在远程分支');
+      process.exit(0);
+    }
   }
 
   // 切换分支
