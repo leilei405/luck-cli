@@ -364,6 +364,11 @@ pnpm-debug.log*
    */
   async publish () {
     await this.checkTag();
+    await this.checkoutGitBranch('master');
+    await this.mergeBranchToMaster();
+    await this.pushRemoteRepo('master');
+    await this.deleteLocalBranch();
+    await this.deleteRemoteBranch();
   }
 
   // 创建tag
@@ -387,6 +392,27 @@ pnpm-debug.log*
     log.success('本地 tag 创建成功', tag);
     await this.git.pushTags('origin');
     log.success('远程 tag 推送成功', tag);
+  }
+
+  // 合并分支到master
+  async mergeBranchToMaster () {
+    log.info(`开始合并代码【${this.branch}】--->>>> master 分支`);
+    await this.git.mergeFromTo(this.branch, 'master');
+    log.success('合并代码成功', `[${this.branch} --> master]`);
+  }
+
+  // 删除本地分支
+  async deleteLocalBranch () {
+    log.info(`开始删除本地分支【${this.branch}】`);
+    await this.git.deleteLocalBranch(this.branch);
+    log.success('删除本地分支成功', `[${this.branch}]`);
+  }
+
+  // 删除远程分支
+  async deleteRemoteBranch () {
+    log.info(`开始删除远程分支【${this.branch}】`);
+    await this.git.push(['origin', '--delete', this.branch]);
+    log.success('删除远程分支成功', `[${this.branch}]`);
   }
 
 }
