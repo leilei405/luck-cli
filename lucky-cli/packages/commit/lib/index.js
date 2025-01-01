@@ -169,7 +169,7 @@ pnpm-debug.log*
       await this.git.add(status.modified);
       await this.git.add(status.created);
       await this.git.add(status.deleted);
-      await this.git.add(status.renamed);
+      await this.git.add(status.renamed.map(item => item.to)); // 获取renamed内容
       let message = '';
       while (!message) {
         message = await makeInput({

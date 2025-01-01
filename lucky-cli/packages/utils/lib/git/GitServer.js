@@ -152,7 +152,14 @@ class GitServer {
   // 获取仓库地址
   getRepoUrl(fullName) {
     const platform =this.getPlatform()
-    return `https://${platform}.com/${fullName}.git`
+    if (platform === 'github') {
+      console.log(111)
+      // return `https://${platform}.com/${fullName}.git`
+      return `git@github.com:${fullName}.git`; // 采用SSH模式
+    } else {
+      console.log(222)
+      return `https://gitee.com/${fullName}.git`;
+    }
   }
 
   // 克隆仓库
